@@ -1,7 +1,8 @@
 import pandas as pd
 
-PURCHASES = "backend/data/pharmacy_purchases_noisy.json"
-SALES = "backend/data/pharmacy_sales_noisy.json"
+PURCHASES = "data/pharmacy_purchases_noisy.json"
+SALES = "data/pharmacy_sales_noisy.json"
+
 
 def get_inventory():
     purchases = pd.read_json(PURCHASES)

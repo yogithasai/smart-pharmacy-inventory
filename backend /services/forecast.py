@@ -1,6 +1,5 @@
 import pandas as pd
-
-SALES = "backend/data/pharmacy_sales_noisy.json"
+SALES = "data/pharmacy_sales_noisy.json"
 
 def get_forecast(days=14):
     sales = pd.read_json(SALES)

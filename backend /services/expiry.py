@@ -1,7 +1,8 @@
 import pandas as pd
 from datetime import datetime
+PURCHASES = "data/pharmacy_purchases_noisy.json"
 
-PURCHASES = "backend/data/pharmacy_purchases_noisy.json"
+
 
 def get_expiry_alerts():
     df = pd.read_json(PURCHASES)

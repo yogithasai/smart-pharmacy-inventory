@@ -21,5 +21,10 @@ def forecast():
 def reorder():
     return jsonify(get_reorder())
 
+@app.route("/")
+def home():
+    return {"status": "PharmaSense AI Backend Running"}
+
+
 if __name__ == "__main__":
     app.run(debug=True)
