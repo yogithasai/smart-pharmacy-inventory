@@ -6,7 +6,7 @@ from services.forecast import get_reorder
 def chatbot_response(message: str):
     msg = message.lower()
 
-    # ----- INVENTORY QUERIES -----
+   
     if "stock" in msg:
         inventory = get_inventory()
 
@@ -22,7 +22,7 @@ def chatbot_response(message: str):
             "response": inventory[:5]
         }
 
-    # ----- EXPIRY QUERIES -----
+
     if "expire" in msg or "expiry" in msg:
         expiry = get_expiry_alerts()
 
@@ -52,7 +52,7 @@ def chatbot_response(message: str):
             "response": reorder[:5]
         }
 
-    # ----- LOSS QUERIES -----
+
     if "loss" in msg or "waste" in msg:
         expiry = get_expiry_alerts()
         total_loss = sum(item["Potential_Loss"] for item in expiry)
@@ -62,7 +62,7 @@ def chatbot_response(message: str):
             "response": f"Estimated potential loss due to expiry is ₹{int(total_loss)}."
         }
 
-    # ----- FALLBACK -----
+
     return {
         "type": "text",
         "response": "I can help with stock, expiry, reorder, and loss-related queries."
