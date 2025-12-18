@@ -8,9 +8,16 @@ SALES = os.path.join(DATA_DIR, "pharmacy_sales_noisy.json")
 
 def get_forecast(days=14):
     sales = pd.read_json(SALES)
+
+    # Normalize drug names
+    sales["Drug_Name"] = sales["Drug_Name"].str.lower().str.replace("-", " ")
+
+    # Average daily sales
     avg_sales = sales.groupby("Drug_Name")["Qty_Sold"].mean()
+
     forecast = (avg_sales * days).reset_index()
     forecast.columns = ["Drug_Name", "Forecast_14_Days"]
+
     return forecast.to_dict(orient="records")
 
 
@@ -21,7 +28,10 @@ def get_reorder():
     forecast = pd.DataFrame(get_forecast())
 
     df = inventory.merge(forecast, on="Drug_Name", how="left").fillna(0)
+
     df["Reorder_Qty"] = df["Forecast_14_Days"] - df["Current_Stock"]
     df = df[df["Reorder_Qty"] > 0]
 
-    return df.to_dict(orient="records")
+    df["Reorder_Qty"] = df["Reorder_Qty"].astype(int)
+
+    return df[["Drug_Name", "Reorder_Qty"]].to_dict(orient="records")
