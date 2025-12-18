@@ -7,7 +7,7 @@ DATA_DIR = os.path.join(BASE_DIR, "data")
 SALES = os.path.join(DATA_DIR, "pharmacy_sales_noisy.json")
 
 def get_forecast(days=14):
-    sales = pd.read_json(SALES, lines=True)
+    sales = pd.read_json(SALES)
     avg_sales = sales.groupby("Drug_Name")["Qty_Sold"].mean()
     forecast = (avg_sales * days).reset_index()
     forecast.columns = ["Drug_Name", "Forecast_14_Days"]
