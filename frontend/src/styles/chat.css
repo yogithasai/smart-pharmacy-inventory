@@ -1,16 +1,30 @@
-/* ===== ROOT LAYOUT (FIXED RATIOS) ===== */
+/* ===============================
+   GLOBAL FIX (IMPORTANT)
+================================ */
+html, body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden; /* prevent page scroll */
+  font-family: "Inter", system-ui, sans-serif;
+}
+
+/* ===============================
+   CHAT APP LAYOUT (NAVBAR SAFE)
+================================ */
 .chat-app {
-  height: 100vh;
+  height: calc(100vh - 72px); /* adjust if navbar height differs */
   display: grid;
   grid-template-columns: 220px minmax(0, 1fr) 240px;
   gap: 12px;
   padding: 12px;
   background: radial-gradient(circle at top left, #1e1b4b, #020617);
   color: white;
-  overflow: hidden;
+  box-sizing: border-box;
 }
 
-/* ===== GLASS EFFECT ===== */
+/* ===============================
+   GLASS EFFECT (CORE THEME)
+================================ */
 .glass {
   background: rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(18px);
@@ -20,9 +34,18 @@
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
 }
 
-/* ===== SIDEBAR ===== */
+/* ===============================
+   LEFT SIDEBAR
+================================ */
 .chat-sidebar {
   padding: 16px;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.chat-sidebar h3 {
+  margin-bottom: 14px;
+  opacity: 0.9;
 }
 
 .chat-user {
@@ -31,6 +54,11 @@
   border-radius: 12px;
   background: rgba(255, 255, 255, 0.05);
   cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.chat-user:hover {
+  background: rgba(255, 255, 255, 0.12);
 }
 
 .chat-user.active {
@@ -38,31 +66,40 @@
   box-shadow: 0 0 14px rgba(139, 92, 246, 0.6);
 }
 
-/* ===== MAIN CHAT ===== */
+/* ===============================
+   MAIN CHAT AREA
+================================ */
 .chat-main {
   display: flex;
   flex-direction: column;
+  height: 100%;
 }
 
+/* HEADER */
 .chat-header {
-  padding: 14px;
+  padding: 14px 16px;
   font-size: 16px;
   font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .chat-header span {
   font-size: 12px;
   color: #22c55e;
-  margin-left: 10px;
 }
 
-/* ===== MESSAGES ===== */
+/* ===============================
+   CHAT MESSAGES
+================================ */
 .chat-messages {
   flex: 1;
   padding: 14px;
   overflow-y: auto;
 }
 
+/* MESSAGE ROW */
 .chat-row {
   display: flex;
   gap: 10px;
@@ -73,6 +110,7 @@
   flex-direction: row-reverse;
 }
 
+/* AVATAR */
 .avatar {
   width: 34px;
   height: 34px;
@@ -81,13 +119,16 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 16px;
 }
 
+/* MESSAGE BUBBLE */
 .chat-bubble {
   max-width: 65%;
   padding: 12px 14px;
   border-radius: 16px;
   line-height: 1.5;
+  word-wrap: break-word;
 }
 
 .chat-bubble.user {
@@ -99,6 +140,7 @@
   background: rgba(255, 255, 255, 0.08);
 }
 
+/* TIME */
 .time {
   display: block;
   font-size: 10px;
@@ -106,7 +148,9 @@
   margin-top: 6px;
 }
 
-/* ===== INPUT ===== */
+/* ===============================
+   INPUT AREA
+================================ */
 .chat-input {
   display: flex;
   gap: 10px;
@@ -123,6 +167,10 @@
   color: white;
 }
 
+.chat-input input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
 .chat-input button {
   padding: 12px 16px;
   border-radius: 12px;
@@ -130,14 +178,34 @@
   background: linear-gradient(135deg, #8b5cf6, #6366f1);
   color: white;
   cursor: pointer;
+  transition: transform 0.2s ease;
 }
 
-/* ===== RIGHT PANEL ===== */
+.chat-input button:hover {
+  transform: scale(1.05);
+}
+
+/* ===============================
+   RIGHT NOTIFICATIONS PANEL
+================================ */
 .chat-right {
   padding: 16px;
+  height: 100%;
+  overflow-y: auto;
 }
 
-/* ===== TYPING DOTS ===== */
+.chat-right h3 {
+  margin-bottom: 12px;
+}
+
+.chat-right p {
+  margin-bottom: 10px;
+  opacity: 0.9;
+}
+
+/* ===============================
+   TYPING INDICATOR
+================================ */
 .typing {
   display: flex;
   gap: 6px;
@@ -160,7 +228,9 @@
   100% { opacity: 0.2; }
 }
 
-/* ===== TABLE ===== */
+/* ===============================
+   TABLE STYLING
+================================ */
 table {
   width: 100%;
   margin-top: 10px;
@@ -173,11 +243,14 @@ th, td {
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-/* ===== RESPONSIVE ===== */
+/* ===============================
+   RESPONSIVE (SMALL SCREENS)
+================================ */
 @media (max-width: 1200px) {
   .chat-app {
     grid-template-columns: 200px 1fr;
   }
+
   .chat-right {
     display: none;
   }
