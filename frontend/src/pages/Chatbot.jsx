@@ -1,99 +1,126 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { askChatbot } from "../api/api";
 import "../styles/chat.css";
 
 export default function Chatbot() {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const bottomRef = useRef(null);
+
+  // Auto scroll
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, loading]);
 
   const sendMessage = async () => {
     if (!input.trim()) return;
 
-    const userMsg = {
+    const userMessage = {
       sender: "user",
       text: input,
       time: new Date().toLocaleTimeString(),
     };
 
-    setMessages((prev) => [...prev, userMsg]);
+    setMessages((prev) => [...prev, userMessage]);
     setInput("");
+    setLoading(true);
 
     try {
       const res = await askChatbot(input);
 
-      const botMsg = {
+      const botMessage = {
         sender: "bot",
         text:
           res.data.type === "text"
             ? res.data.response
-            : "📊 Data returned (see table below)",
+            : "📊 Data fetched successfully",
         table: res.data.type === "table" ? res.data.response : null,
         time: new Date().toLocaleTimeString(),
       };
 
-      setMessages((prev) => [...prev, botMsg]);
+      setMessages((prev) => [...prev, botMessage]);
     } catch {
       setMessages((prev) => [
         ...prev,
         {
           sender: "bot",
-          text: "⚠️ Error connecting to backend",
+          text: "⚠️ Unable to connect to chatbot service.",
           time: new Date().toLocaleTimeString(),
         },
       ]);
     }
+
+    setLoading(false);
   };
 
   return (
     <div className="chat-app">
       {/* LEFT SIDEBAR */}
-      <div className="chat-sidebar">
+      <div className="chat-sidebar glass">
         <h3>Chats</h3>
-        <div className="chat-user active">Inventory Assistant</div>
-        <div className="chat-user">Supplier Bot</div>
-        <div className="chat-user">Admin</div>
+        <div className="chat-user active">💊 Inventory Assistant</div>
+        <div className="chat-user">📦 Supplier Bot</div>
+        <div className="chat-user">🛠 Admin</div>
       </div>
 
       {/* MAIN CHAT */}
-      <div className="chat-main">
+      <div className="chat-main glass">
         <div className="chat-header">
-          💊 Inventory Assistant <span>Online</span>
+          💊 Inventory Assistant <span>● Online</span>
         </div>
 
         <div className="chat-messages">
           {messages.map((msg, i) => (
-            <div
-              key={i}
-              className={`chat-bubble ${msg.sender}`}
-            >
-              <p>{msg.text}</p>
+            <div key={i} className={`chat-row ${msg.sender}`}>
+              <div className="avatar">
+                {msg.sender === "bot" ? "🤖" : "👤"}
+              </div>
 
-              {msg.table && (
-                <table>
-                  <thead>
-                    <tr>
-                      {Object.keys(msg.table[0]).map((k) => (
-                        <th key={k}>{k}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {msg.table.map((row, r) => (
-                      <tr key={r}>
-                        {Object.values(row).map((v, c) => (
-                          <td key={c}>{v}</td>
+              <div className={`chat-bubble ${msg.sender}`}>
+                <p>{msg.text}</p>
+
+                {msg.table && (
+                  <table>
+                    <thead>
+                      <tr>
+                        {Object.keys(msg.table[0]).map((k) => (
+                          <th key={k}>{k}</th>
                         ))}
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              )}
+                    </thead>
+                    <tbody>
+                      {msg.table.map((row, r) => (
+                        <tr key={r}>
+                          {Object.values(row).map((v, c) => (
+                            <td key={c}>{v}</td>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
 
-              <span>{msg.time}</span>
+                <span className="time">{msg.time}</span>
+              </div>
             </div>
           ))}
+
+          {loading && (
+            <div className="chat-row bot">
+              <div className="avatar">🤖</div>
+              <div className="chat-bubble bot typing">
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+            </div>
+          )}
+
+          <div ref={bottomRef}></div>
         </div>
 
+        {/* INPUT */}
         <div className="chat-input">
           <input
             value={input}
@@ -106,9 +133,9 @@ export default function Chatbot() {
       </div>
 
       {/* RIGHT PANEL */}
-      <div className="chat-right">
+      <div className="chat-right glass">
         <h3>Notifications</h3>
-        <p>✔ Expiry alert checked</p>
+        <p>✔ Expiry alerts checked</p>
         <p>✔ Forecast updated</p>
         <p>✔ NLP model active</p>
       </div>
