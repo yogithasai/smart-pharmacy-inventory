@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { getDashboardStats } from "../api/api";
 import StatCard from "../components/StatCard";
+import DemandChart from "../components/DemandChart";
 
 export default function Dashboard() {
   const [stats, setStats] = useState({});
@@ -9,19 +10,60 @@ export default function Dashboard() {
     getDashboardStats().then((res) => setStats(res.data));
   }, []);
 
+  // Chart data (mock for demo, replace with backend later)
+  const demandData = [
+    { date: "Mon", value: 120 },
+    { date: "Tue", value: 150 },
+    { date: "Wed", value: 180 },
+    { date: "Thu", value: 160 },
+    { date: "Fri", value: 200 },
+    { date: "Sat", value: 170 },
+    { date: "Sun", value: 190 },
+  ];
+
+  const expiryData = [
+    { date: "Jan", value: 30 },
+    { date: "Feb", value: 25 },
+    { date: "Mar", value: 40 },
+    { date: "Apr", value: 20 },
+  ];
+
   return (
     <div>
-      <h1 style={{ fontWeight: 700, fontSize: "28px" }}>
-          Statistics
+      {/* Header */}
+      <h1 style={{ fontWeight: 700, fontSize: "30px" }}>
+        Statistics
       </h1>
-      <p style={{ color: "#b3b3c6", marginBottom: "24px" }}>
-           Smart Pharmacy Inventory Overview
+      <p style={{ color: "#b3b3c6", marginBottom: "28px" }}>
+        Smart Pharmacy Inventory Overview
       </p>
+
+      {/* Stat Cards */}
       <div className="grid">
         <StatCard title="Total Medicines" value={stats.total} />
         <StatCard title="Low Stock" value={stats.low_stock} />
         <StatCard title="Expiring Soon" value={stats.expiring} />
         <StatCard title="Revenue" value={`₹${stats.revenue}`} />
+      </div>
+
+      {/* Charts Section */}
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "2fr 1fr",
+          gap: "24px",
+          marginTop: "32px",
+        }}
+      >
+        <DemandChart
+          title="Medicine Demand Trend"
+          data={demandData}
+        />
+
+        <DemandChart
+          title="Expiry Risk Overview"
+          data={expiryData}
+        />
       </div>
     </div>
   );

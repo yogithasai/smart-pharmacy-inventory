@@ -1,16 +1,9 @@
-/* =====================
-   CLASSIC DARK SAAS THEME
-   ===================== */
-
 :root {
   --bg-main: #0a0a0f;
   --bg-card: rgba(255, 255, 255, 0.06);
-  --bg-glass: rgba(255, 255, 255, 0.08);
   --border-glass: rgba(255, 255, 255, 0.12);
 
   --accent: #8b5cf6;
-  --accent-soft: rgba(139, 92, 246, 0.25);
-
   --text-main: #ffffff;
   --text-muted: #b3b3c6;
 }
@@ -23,7 +16,7 @@ body {
   margin: 0;
   background: radial-gradient(circle at top, #1b1530, #05050a);
   color: var(--text-main);
-  font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont;
+  font-family: "Inter", system-ui, -apple-system;
 }
 
 /* ---------- NAVBAR ---------- */
@@ -39,15 +32,14 @@ body {
 }
 
 .navbar h2 {
-  font-weight: 700;
   color: var(--accent);
+  font-weight: 700;
 }
 
 .navbar a {
   color: var(--text-muted);
-  margin-left: 20px;
+  margin-left: 18px;
   text-decoration: none;
-  font-weight: 500;
 }
 
 .navbar a:hover {
@@ -66,7 +58,7 @@ body {
   gap: 22px;
 }
 
-/* ---------- STAT CARDS ---------- */
+/* ---------- CARDS ---------- */
 .card {
   background: linear-gradient(
     180deg,
@@ -80,13 +72,13 @@ body {
 }
 
 .card h3 {
-  font-size: 14px;
+  font-size: 15px;
   color: var(--text-muted);
   margin-bottom: 10px;
 }
 
 .card p {
-  font-size: 30px;
+  font-size: 32px;
   font-weight: 700;
 }
 
@@ -116,7 +108,7 @@ tr:hover {
   background: rgba(139, 92, 246, 0.1);
 }
 
-/* ---------- INPUTS ---------- */
+/* ---------- INPUT & BUTTON ---------- */
 input {
   background: var(--bg-card);
   border: 1px solid var(--border-glass);
@@ -124,10 +116,8 @@ input {
   border-radius: 14px;
   color: white;
   width: 100%;
-  margin-top: 12px;
 }
 
-/* ---------- BUTTON ---------- */
 button {
   margin-top: 14px;
   background: linear-gradient(135deg, #8b5cf6, #6d28d9);
