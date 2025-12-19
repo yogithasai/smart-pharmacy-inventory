@@ -10,7 +10,7 @@ export default function Dashboard() {
     getDashboardStats().then((res) => setStats(res.data));
   }, []);
 
-  // Chart data (mock for demo, replace with backend later)
+  // Chart data (mock but realistic)
   const demandData = [
     { date: "Mon", value: 120 },
     { date: "Tue", value: 150 },
@@ -38,30 +38,44 @@ export default function Dashboard() {
         Smart Pharmacy Inventory Overview
       </p>
 
-
       {/* Stat Cards */}
       <div className="grid">
-        <StatCard title="Total Medicines" value={stats.total} />
-        <StatCard title="Low Stock" value={stats.low_stock} />
-        <StatCard title="Expiring Soon" value={stats.expiring} />
-        <StatCard title="Revenue" value={stats.revenue} prefix="₹" />
-
+        <StatCard
+          title="Total Medicines"
+          value={stats.total}
+          subtitle="All active SKUs"
+        />
+        <StatCard
+          title="Low Stock"
+          value={stats.low_stock}
+          subtitle="Needs attention"
+        />
+        <StatCard
+          title="Expiring Soon"
+          value={stats.expiring}
+          subtitle="Within 30 days"
+        />
+        <StatCard
+          title="Revenue"
+          value={stats.revenue}
+          prefix="₹"
+          subtitle="Monthly estimate"
+        />
       </div>
 
-      {/* Charts Section */}
+      {/* Charts */}
       <div
         style={{
           display: "grid",
           gridTemplateColumns: "2fr 1fr",
-          gap: "24px",
-          marginTop: "32px",
+          gap: "28px",
+          marginTop: "40px",
         }}
       >
         <DemandChart
           title="Medicine Demand Trend"
           data={demandData}
         />
-
         <DemandChart
           title="Expiry Risk Overview"
           data={expiryData}

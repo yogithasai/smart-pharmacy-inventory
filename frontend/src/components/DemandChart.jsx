@@ -1,26 +1,39 @@
 import {
+  ResponsiveContainer,
   LineChart,
   Line,
   XAxis,
   YAxis,
   Tooltip,
-  ResponsiveContainer,
+  CartesianGrid,
 } from "recharts";
 
 export default function DemandChart({ title, data }) {
   return (
     <div className="card">
-      <h3 style={{ marginBottom: "14px" }}>{title}</h3>
+      <h3 style={{ marginBottom: "16px" }}>{title}</h3>
 
-    <ResponsiveContainer width="100%" height={300}>
+      <ResponsiveContainer width="100%" height={300}>
         <LineChart data={data}>
-          <XAxis dataKey="date" stroke="#b3b3c6" />
-          <YAxis stroke="#b3b3c6" />
+          <CartesianGrid
+            strokeDasharray="3 3"
+            stroke="rgba(255,255,255,0.08)"
+          />
+          <XAxis
+            dataKey="date"
+            stroke="#b3b3c6"
+            tick={{ fontSize: 12 }}
+          />
+          <YAxis
+            stroke="#b3b3c6"
+            tick={{ fontSize: 12 }}
+          />
           <Tooltip
             contentStyle={{
               background: "#0a0a0f",
-              border: "1px solid #2a2a3d",
+              border: "1px solid rgba(255,255,255,0.15)",
               borderRadius: "10px",
+              color: "white",
             }}
           />
           <Line
