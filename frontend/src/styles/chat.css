@@ -90,15 +90,29 @@ body {
   justify-content: flex-end;
 }
 
+/* ================= CHAT BUBBLES ================= */
 .chat-bubble {
   max-width: 65%;
-  padding: 10px 14px;
+  padding: 12px 14px;
   border-radius: 14px;
   background: rgba(255, 255, 255, 0.12);
 }
 
+/* USER BUBBLE */
 .chat-row.user .chat-bubble {
   background: linear-gradient(135deg, #8b5cf6, #6366f1);
+}
+
+/* ✅ KEY FEATURE: MULTI-LINE RESPONSE SUPPORT */
+.chat-bubble p {
+  white-space: pre-line;     /* 👈 THIS FIXES LINE BREAKS */
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Optional: better spacing for bullet-style answers */
+.chat-bubble p br {
+  margin-bottom: 6px;
 }
 
 /* ================= INPUT ================= */
