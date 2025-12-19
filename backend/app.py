@@ -16,6 +16,11 @@ from services.chatbot import chatbot_response   # ✅ ONLY THIS
 def home():
     return {"status": "PharmaSense AI Backend Running"}
 
+@app.route("/dashboard-stats")
+def dashboard_stats():
+    return jsonify(get_dashboard_stats())
+
+
 @app.route("/inventory")
 def inventory():
     return jsonify(get_inventory())

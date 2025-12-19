@@ -1,16 +1,29 @@
 import { useEffect, useState } from "react";
-import { getDashboardStats } from "../api/api";
+import { getDashboardStats, getRealDashboardStats } from "../api/api";
 import StatCard from "../components/StatCard";
 import DemandChart from "../components/DemandChart";
 
 export default function Dashboard() {
-  const [stats, setStats] = useState({});
+  const [stats, setStats] = useState({
+    total: "--",
+    low_stock: "--",
+    expiring: "--",
+    revenue: "--",
+  });
 
   useEffect(() => {
-    getDashboardStats().then((res) => setStats(res.data));
+    // 🔹 TRY REAL BACKEND DATA FIRST
+    getRealDashboardStats()
+      .then((res) => {
+        setStats(res.data);
+      })
+      .catch(() => {
+        // 🔹 FALLBACK (keeps old behavior safe)
+        getDashboardStats().then((res) => setStats(res.data));
+      });
   }, []);
 
-  // Chart data (mock but realistic)
+  /* ================= MOCK CHART DATA (UNCHANGED) ================= */
   const demandData = [
     { date: "Mon", value: 120 },
     { date: "Tue", value: 150 },

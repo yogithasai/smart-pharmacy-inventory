@@ -5,7 +5,7 @@ from services.expiry import get_expiry_alerts
 from services.forecast import get_reorder
 
 # =================================================
-# PATH FIX (CRITICAL)
+# PATH FIX
 # =================================================
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MODEL_PATH = os.path.join(BASE_DIR, "services", "nlp_model.pkl")
@@ -24,10 +24,15 @@ print("✅ NLP model loaded successfully")
 def chatbot_response(message: str):
     msg = message.lower().strip()
 
-    # -------------------------------------------------
-    # SMART INTENT OVERRIDE (NO RETRAINING REQUIRED)
-    # -------------------------------------------------
-    if any(word in msg for word in ["reorder", "restock", "order again", "low stock"]):
+    # =================================================
+    # SMART INTENT OVERRIDE (CRITICAL)
+    # =================================================
+    reorder_keywords = [
+        "reorder", "restock", "order again", "low stock",
+        "need to order", "how many to reorder", "reorder status"
+    ]
+
+    if any(word in msg for word in reorder_keywords):
         intent = "reorder"
     else:
         intent = model.predict(vectorizer.transform([msg]))[0]
@@ -36,9 +41,9 @@ def chatbot_response(message: str):
     # INVENTORY
     # =================================================
     if intent == "inventory":
-        inventory = get_inventory()  # realtime fetch
+        inventory = get_inventory()
 
-        # Drug-specific query
+        # Specific medicine query
         for item in inventory:
             if item["Drug_Name"].lower() in msg:
                 return {
@@ -55,29 +60,24 @@ def chatbot_response(message: str):
         total_stock = sum(i["Current_Stock"] for i in inventory)
         top_items = inventory[:5]
 
-        response_text = (
+        response = (
             "📦 **Inventory Overview**\n\n"
             f"• **Total Stock:** {total_stock:,} units\n\n"
             "• **Top Available Medicines:**\n"
         )
 
         for item in top_items:
-            response_text += (
-                f"  • {item['Drug_Name']} — {item['Current_Stock']:,} units\n"
-            )
+            response += f"  • {item['Drug_Name']} — {item['Current_Stock']:,} units\n"
 
-        response_text += "\n📊 Source: Live inventory records"
+        response += "\n📊 Source: Live inventory records"
 
-        return {
-            "type": "text",
-            "response": response_text
-        }
+        return {"type": "text", "response": response}
 
     # =================================================
     # EXPIRY
     # =================================================
     if intent == "expiry":
-        expiry = get_expiry_alerts()  # realtime fetch
+        expiry = get_expiry_alerts()
 
         if not expiry:
             return {
@@ -85,45 +85,52 @@ def chatbot_response(message: str):
                 "response": "✅ No medicines are nearing expiry currently."
             }
 
-        response_text = (
-            "⏳ **Expiry Alert Summary**\n\n"
-            f"• **{len(expiry)} medicines** are approaching expiry.\n\n"
-            "📋 Please review expiry dashboard for details."
-        )
-
         return {
             "type": "text",
-            "response": response_text
+            "response": (
+                "⏳ **Expiry Alert Summary**\n\n"
+                f"• **{len(expiry)} medicines** are approaching expiry.\n\n"
+                "📋 Please check the expiry dashboard for detailed dates."
+            )
         }
 
     # =================================================
-    # REORDER (FIXED & PROFESSIONAL)
+    # REORDER (FULLY FIXED)
     # =================================================
     if intent == "reorder":
-        reorder = get_reorder()  # realtime fetch
+        reorder = get_reorder()
 
         if not reorder:
             return {
                 "type": "text",
-                "response": "✅ All medicines are sufficiently stocked. No reorders required."
+                "response": (
+                    "✅ **Reorder Status**\n\n"
+                    "All medicines are sufficiently stocked.\n"
+                    "No reorders are required at this time."
+                )
             }
 
-        response_text = (
-            "📦 **Reorder Recommendations**\n\n"
-            "The following medicines are low in stock and require reordering:\n\n"
+        total_reorder_items = len(reorder)
+
+        response = (
+            "📦 **Reorder Summary**\n\n"
+            f"• **Medicines requiring reorder:** {total_reorder_items}\n\n"
+            "• **Low Stock Medicines:**\n"
         )
 
-        for item in reorder[:5]:
-            response_text += (
-                f"  • {item['Drug_Name']} — {item['Current_Stock']} units remaining\n"
+        for item in reorder:
+            response += (
+                f"  • {item['Drug_Name']} — "
+                f"{item['Current_Stock']} units remaining\n"
             )
 
-        response_text += "\n📊 Source: Live stock monitoring system"
+        response += (
+            "\n📌 **Action Required:**\n"
+            "Please reorder the above medicines to avoid stock shortages.\n\n"
+            "📊 Source: Live stock monitoring system"
+        )
 
-        return {
-            "type": "text",
-            "response": response_text
-        }
+        return {"type": "text", "response": response}
 
     # =================================================
     # LOSS
@@ -137,7 +144,7 @@ def chatbot_response(message: str):
             "response": (
                 "💰 **Expiry Loss Analysis**\n\n"
                 f"• Estimated Financial Loss: **₹{int(total_loss):,}**\n\n"
-                "📉 Recommendation: Improve stock rotation and forecasting."
+                "📉 Recommendation: Improve stock rotation and demand forecasting."
             )
         }
 
@@ -148,11 +155,11 @@ def chatbot_response(message: str):
         "type": "text",
         "response": (
             "🤖 **Inventory Assistant Help**\n\n"
-            "I can assist you with:\n"
+            "You can ask me about:\n"
             "• Inventory status\n"
             "• Expiry alerts\n"
-            "• Reorder recommendations\n"
-            "• Expiry-related loss analysis\n\n"
+            "• Reorder requirements\n"
+            "• Loss due to expiry\n\n"
             "Please ask a pharmacy-related question."
         )
     }
