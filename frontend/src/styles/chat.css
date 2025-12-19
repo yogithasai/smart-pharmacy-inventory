@@ -7,24 +7,24 @@ html,
 body {
   height: 100%;
   margin: 0;
-  overflow: hidden;
   font-family: "Inter", system-ui, sans-serif;
 }
 
-/* ================= PAGE OFFSET (NAVBAR SAFE) ================= */
-.chat-page-wrapper {
-  height: calc(100vh - 72px); /* navbar height */
-  padding-top: 72px;
-  overflow: hidden;
+/* ================= CHAT PAGE WRAPPER ================= */
+/* This sits BELOW navbar */
+.chat-page {
+  height: calc(100vh - 64px); /* navbar height */
+  display: flex;
+  flex-direction: column;
 }
 
-/* ================= CHAT LAYOUT ================= */
+/* ================= CHAT APP ================= */
 .chat-app {
-  height: 100%;
+  flex: 1;
   display: grid;
   grid-template-columns: 210px minmax(0, 1fr) 230px;
-  gap: 10px;
-  padding: 10px;
+  gap: 12px;
+  padding: 12px;
   background: radial-gradient(circle at top left, #1e1b4b, #020617);
   color: white;
   overflow: hidden;
@@ -34,35 +34,9 @@ body {
 .glass {
   background: rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.15);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
-}
-
-/* ================= SIDEBAR ================= */
-.chat-sidebar {
-  padding: 14px;
-  height: 100%;
-  overflow-y: auto;
-}
-
-.chat-sidebar h3 {
-  margin-bottom: 14px;
-  opacity: 0.9;
-}
-
-.chat-user {
-  padding: 10px;
-  margin-bottom: 8px;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.06);
-  cursor: pointer;
-  transition: background 0.2s ease;
-}
-
-.chat-user.active {
-  background: linear-gradient(135deg, #8b5cf6, #6366f1);
 }
 
 /* ================= MAIN CHAT ================= */
@@ -70,7 +44,6 @@ body {
   display: flex;
   flex-direction: column;
   height: 100%;
-  overflow: hidden;
 }
 
 .chat-header {
@@ -89,57 +62,13 @@ body {
   flex: 1;
   padding: 12px;
   overflow-y: auto;
-  overflow-x: hidden;
 }
 
-.chat-row {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 14px;
-}
-
-.chat-row.user {
-  flex-direction: row-reverse;
-}
-
-.avatar {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.15);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.chat-bubble {
-  max-width: 65%;
-  padding: 10px 12px;
-  border-radius: 14px;
-  word-wrap: break-word;
-}
-
-.chat-bubble.user {
-  background: linear-gradient(135deg, #8b5cf6, #6366f1);
-}
-
-.chat-bubble.bot {
-  background: rgba(255, 255, 255, 0.1);
-}
-
-.time {
-  display: block;
-  font-size: 10px;
-  opacity: 0.6;
-  margin-top: 4px;
-}
-
-/* ================= INPUT ================= */
+/* ================= INPUT (STAYS VISIBLE) ================= */
 .chat-input {
+  padding: 10px;
   display: flex;
   gap: 8px;
-  padding: 10px;
   flex-shrink: 0;
 }
 
@@ -148,7 +77,6 @@ body {
   padding: 10px 12px;
   border-radius: 12px;
   border: none;
-  outline: none;
   background: rgba(255, 255, 255, 0.12);
   color: white;
 }
@@ -160,39 +88,6 @@ body {
   cursor: pointer;
   background: linear-gradient(135deg, #8b5cf6, #6366f1);
   color: white;
-}
-
-/* ================= RIGHT PANEL ================= */
-.chat-right {
-  padding: 14px;
-  height: 100%;
-  overflow-y: auto;
-}
-
-/* ================= TYPING ================= */
-.typing {
-  display: flex;
-  gap: 6px;
-}
-
-.typing span {
-  width: 6px;
-  height: 6px;
-  background: rgba(255, 255, 255, 0.6);
-  border-radius: 50%;
-  animation: blink 1.4s infinite;
-}
-
-@keyframes blink {
-  0% {
-    opacity: 0.2;
-  }
-  20% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0.2;
-  }
 }
 
 /* ================= RESPONSIVE ================= */
