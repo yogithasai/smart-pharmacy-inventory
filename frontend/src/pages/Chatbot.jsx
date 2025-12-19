@@ -16,30 +16,33 @@ export default function Chatbot() {
   const sendMessage = async () => {
     if (!input.trim()) return;
 
+    const userText = input;
+
     setMessages((prev) => [
       ...prev,
-      { sender: "user", text: input, time: new Date().toLocaleTimeString() },
+      {
+        sender: "user",
+        text: userText,
+        time: new Date().toLocaleTimeString(),
+      },
     ]);
 
     setInput("");
     setLoading(true);
 
     try {
-      const res = await askChatbot(input);
+      const res = await askChatbot(userText);
 
       setMessages((prev) => [
         ...prev,
         {
           sender: "bot",
-          text:
-            res.data.type === "text"
-              ? res.data.response
-              : "📊 Data fetched successfully",
-          table: res.data.type === "table" ? res.data.response : null,
+          // ✅ BACKEND NOW RETURNS answer DIRECTLY
+          text: res.data.answer,
           time: new Date().toLocaleTimeString(),
         },
       ]);
-    } catch {
+    } catch (error) {
       setMessages((prev) => [
         ...prev,
         {
@@ -79,28 +82,6 @@ export default function Chatbot() {
 
                 <div className={`chat-bubble ${msg.sender}`}>
                   <p>{msg.text}</p>
-
-                  {msg.table && (
-                    <table>
-                      <thead>
-                        <tr>
-                          {Object.keys(msg.table[0]).map((k) => (
-                            <th key={k}>{k}</th>
-                          ))}
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {msg.table.map((row, r) => (
-                          <tr key={r}>
-                            {Object.values(row).map((v, c) => (
-                              <td key={c}>{v}</td>
-                            ))}
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  )}
-
                   <span className="time">{msg.time}</span>
                 </div>
               </div>
@@ -110,7 +91,9 @@ export default function Chatbot() {
               <div className="chat-row bot">
                 <div className="avatar">🤖</div>
                 <div className="chat-bubble bot typing">
-                  <span></span><span></span><span></span>
+                  <span></span>
+                  <span></span>
+                  <span></span>
                 </div>
               </div>
             )}
