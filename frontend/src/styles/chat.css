@@ -1,44 +1,48 @@
-/* ===============================
-   GLOBAL FIX (IMPORTANT)
-================================ */
-html, body {
-  height: 100%;
-  margin: 0;
-  overflow: hidden; /* prevent page scroll */
-  font-family: "Inter", system-ui, sans-serif;
-}
-
-/* ===============================
-   CHAT APP LAYOUT (NAVBAR SAFE)
-================================ */
-.chat-app {
-  height: calc(100vh - 72px); /* adjust if navbar height differs */
-  display: grid;
-  grid-template-columns: 220px minmax(0, 1fr) 240px;
-  gap: 12px;
-  padding: 12px;
-  background: radial-gradient(circle at top left, #1e1b4b, #020617);
-  color: white;
+/* ================= GLOBAL ================= */
+* {
   box-sizing: border-box;
 }
 
-/* ===============================
-   GLASS EFFECT (CORE THEME)
-================================ */
+html,
+body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  font-family: "Inter", system-ui, sans-serif;
+}
+
+/* ================= PAGE OFFSET (NAVBAR SAFE) ================= */
+.chat-page-wrapper {
+  height: calc(100vh - 72px); /* navbar height */
+  padding-top: 72px;
+  overflow: hidden;
+}
+
+/* ================= CHAT LAYOUT ================= */
+.chat-app {
+  height: 100%;
+  display: grid;
+  grid-template-columns: 210px minmax(0, 1fr) 230px;
+  gap: 10px;
+  padding: 10px;
+  background: radial-gradient(circle at top left, #1e1b4b, #020617);
+  color: white;
+  overflow: hidden;
+}
+
+/* ================= GLASS ================= */
 .glass {
   background: rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
-  border-radius: 18px;
+  border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.15);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
 }
 
-/* ===============================
-   LEFT SIDEBAR
-================================ */
+/* ================= SIDEBAR ================= */
 .chat-sidebar {
-  padding: 16px;
+  padding: 14px;
   height: 100%;
   overflow-y: auto;
 }
@@ -49,40 +53,30 @@ html, body {
 }
 
 .chat-user {
-  padding: 12px;
-  margin-bottom: 10px;
+  padding: 10px;
+  margin-bottom: 8px;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.06);
   cursor: pointer;
-  transition: all 0.25s ease;
-}
-
-.chat-user:hover {
-  background: rgba(255, 255, 255, 0.12);
+  transition: background 0.2s ease;
 }
 
 .chat-user.active {
   background: linear-gradient(135deg, #8b5cf6, #6366f1);
-  box-shadow: 0 0 14px rgba(139, 92, 246, 0.6);
 }
 
-/* ===============================
-   MAIN CHAT AREA
-================================ */
+/* ================= MAIN CHAT ================= */
 .chat-main {
   display: flex;
   flex-direction: column;
   height: 100%;
+  overflow: hidden;
 }
 
-/* HEADER */
 .chat-header {
-  padding: 14px 16px;
-  font-size: 16px;
+  padding: 12px 14px;
   font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 10px;
+  flex-shrink: 0;
 }
 
 .chat-header span {
@@ -90,76 +84,68 @@ html, body {
   color: #22c55e;
 }
 
-/* ===============================
-   CHAT MESSAGES
-================================ */
+/* ================= MESSAGES ================= */
 .chat-messages {
   flex: 1;
-  padding: 14px;
+  padding: 12px;
   overflow-y: auto;
+  overflow-x: hidden;
 }
 
-/* MESSAGE ROW */
 .chat-row {
   display: flex;
-  gap: 10px;
-  margin-bottom: 16px;
+  gap: 8px;
+  margin-bottom: 14px;
 }
 
 .chat-row.user {
   flex-direction: row-reverse;
 }
 
-/* AVATAR */
 .avatar {
-  width: 34px;
-  height: 34px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.15);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 16px;
+  flex-shrink: 0;
 }
 
-/* MESSAGE BUBBLE */
 .chat-bubble {
   max-width: 65%;
-  padding: 12px 14px;
-  border-radius: 16px;
-  line-height: 1.5;
+  padding: 10px 12px;
+  border-radius: 14px;
   word-wrap: break-word;
 }
 
 .chat-bubble.user {
   background: linear-gradient(135deg, #8b5cf6, #6366f1);
-  box-shadow: 0 0 14px rgba(139, 92, 246, 0.5);
 }
 
 .chat-bubble.bot {
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.1);
 }
 
-/* TIME */
 .time {
   display: block;
   font-size: 10px;
   opacity: 0.6;
-  margin-top: 6px;
+  margin-top: 4px;
 }
 
-/* ===============================
-   INPUT AREA
-================================ */
+/* ================= INPUT ================= */
 .chat-input {
   display: flex;
-  gap: 10px;
-  padding: 14px;
+  gap: 8px;
+  padding: 10px;
+  flex-shrink: 0;
 }
 
 .chat-input input {
   flex: 1;
-  padding: 12px 14px;
+  padding: 10px 12px;
   border-radius: 12px;
   border: none;
   outline: none;
@@ -167,85 +153,49 @@ html, body {
   color: white;
 }
 
-.chat-input input::placeholder {
-  color: rgba(255, 255, 255, 0.6);
-}
-
 .chat-input button {
-  padding: 12px 16px;
+  padding: 10px 14px;
   border-radius: 12px;
   border: none;
+  cursor: pointer;
   background: linear-gradient(135deg, #8b5cf6, #6366f1);
   color: white;
-  cursor: pointer;
-  transition: transform 0.2s ease;
 }
 
-.chat-input button:hover {
-  transform: scale(1.05);
-}
-
-/* ===============================
-   RIGHT NOTIFICATIONS PANEL
-================================ */
+/* ================= RIGHT PANEL ================= */
 .chat-right {
-  padding: 16px;
+  padding: 14px;
   height: 100%;
   overflow-y: auto;
 }
 
-.chat-right h3 {
-  margin-bottom: 12px;
-}
-
-.chat-right p {
-  margin-bottom: 10px;
-  opacity: 0.9;
-}
-
-/* ===============================
-   TYPING INDICATOR
-================================ */
+/* ================= TYPING ================= */
 .typing {
   display: flex;
   gap: 6px;
 }
 
 .typing span {
-  width: 7px;
-  height: 7px;
+  width: 6px;
+  height: 6px;
   background: rgba(255, 255, 255, 0.6);
   border-radius: 50%;
-  animation: blink 1.4s infinite both;
+  animation: blink 1.4s infinite;
 }
-
-.typing span:nth-child(2) { animation-delay: 0.2s; }
-.typing span:nth-child(3) { animation-delay: 0.4s; }
 
 @keyframes blink {
-  0% { opacity: 0.2; }
-  20% { opacity: 1; }
-  100% { opacity: 0.2; }
+  0% {
+    opacity: 0.2;
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.2;
+  }
 }
 
-/* ===============================
-   TABLE STYLING
-================================ */
-table {
-  width: 100%;
-  margin-top: 10px;
-  border-collapse: collapse;
-  font-size: 12px;
-}
-
-th, td {
-  padding: 6px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-/* ===============================
-   RESPONSIVE (SMALL SCREENS)
-================================ */
+/* ================= RESPONSIVE ================= */
 @media (max-width: 1200px) {
   .chat-app {
     grid-template-columns: 200px 1fr;

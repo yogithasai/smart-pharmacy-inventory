@@ -8,7 +8,7 @@ export default function Chatbot() {
   const [loading, setLoading] = useState(false);
   const bottomRef = useRef(null);
 
-  // Auto scroll
+  // Auto-scroll
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
@@ -16,30 +16,29 @@ export default function Chatbot() {
   const sendMessage = async () => {
     if (!input.trim()) return;
 
-    const userMessage = {
-      sender: "user",
-      text: input,
-      time: new Date().toLocaleTimeString(),
-    };
+    setMessages((prev) => [
+      ...prev,
+      { sender: "user", text: input, time: new Date().toLocaleTimeString() },
+    ]);
 
-    setMessages((prev) => [...prev, userMessage]);
     setInput("");
     setLoading(true);
 
     try {
       const res = await askChatbot(input);
 
-      const botMessage = {
-        sender: "bot",
-        text:
-          res.data.type === "text"
-            ? res.data.response
-            : "📊 Data fetched successfully",
-        table: res.data.type === "table" ? res.data.response : null,
-        time: new Date().toLocaleTimeString(),
-      };
-
-      setMessages((prev) => [...prev, botMessage]);
+      setMessages((prev) => [
+        ...prev,
+        {
+          sender: "bot",
+          text:
+            res.data.type === "text"
+              ? res.data.response
+              : "📊 Data fetched successfully",
+          table: res.data.type === "table" ? res.data.response : null,
+          time: new Date().toLocaleTimeString(),
+        },
+      ]);
     } catch {
       setMessages((prev) => [
         ...prev,
@@ -55,89 +54,88 @@ export default function Chatbot() {
   };
 
   return (
-    <div className="chat-app">
-      {/* LEFT SIDEBAR */}
-      <div className="chat-sidebar glass">
-        <h3>Chats</h3>
-        <div className="chat-user active">💊 Inventory Assistant</div>
-        <div className="chat-user">📦 Supplier Bot</div>
-        <div className="chat-user">🛠 Admin</div>
-      </div>
-
-      {/* MAIN CHAT */}
-      <div className="chat-main glass">
-        <div className="chat-header">
-          💊 Inventory Assistant <span>● Online</span>
+    <div className="chat-page-wrapper">
+      <div className="chat-app">
+        {/* LEFT SIDEBAR */}
+        <div className="chat-sidebar glass">
+          <h3>Chats</h3>
+          <div className="chat-user active">💊 Inventory Assistant</div>
+          <div className="chat-user">📦 Supplier Bot</div>
+          <div className="chat-user">🛠 Admin</div>
         </div>
 
-        <div className="chat-messages">
-          {messages.map((msg, i) => (
-            <div key={i} className={`chat-row ${msg.sender}`}>
-              <div className="avatar">
-                {msg.sender === "bot" ? "🤖" : "👤"}
-              </div>
+        {/* MAIN CHAT */}
+        <div className="chat-main glass">
+          <div className="chat-header">
+            💊 Inventory Assistant <span>● Online</span>
+          </div>
 
-              <div className={`chat-bubble ${msg.sender}`}>
-                <p>{msg.text}</p>
+          <div className="chat-messages">
+            {messages.map((msg, i) => (
+              <div key={i} className={`chat-row ${msg.sender}`}>
+                <div className="avatar">
+                  {msg.sender === "bot" ? "🤖" : "👤"}
+                </div>
 
-                {msg.table && (
-                  <table>
-                    <thead>
-                      <tr>
-                        {Object.keys(msg.table[0]).map((k) => (
-                          <th key={k}>{k}</th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {msg.table.map((row, r) => (
-                        <tr key={r}>
-                          {Object.values(row).map((v, c) => (
-                            <td key={c}>{v}</td>
+                <div className={`chat-bubble ${msg.sender}`}>
+                  <p>{msg.text}</p>
+
+                  {msg.table && (
+                    <table>
+                      <thead>
+                        <tr>
+                          {Object.keys(msg.table[0]).map((k) => (
+                            <th key={k}>{k}</th>
                           ))}
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                )}
+                      </thead>
+                      <tbody>
+                        {msg.table.map((row, r) => (
+                          <tr key={r}>
+                            {Object.values(row).map((v, c) => (
+                              <td key={c}>{v}</td>
+                            ))}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  )}
 
-                <span className="time">{msg.time}</span>
+                  <span className="time">{msg.time}</span>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
 
-          {loading && (
-            <div className="chat-row bot">
-              <div className="avatar">🤖</div>
-              <div className="chat-bubble bot typing">
-                <span></span>
-                <span></span>
-                <span></span>
+            {loading && (
+              <div className="chat-row bot">
+                <div className="avatar">🤖</div>
+                <div className="chat-bubble bot typing">
+                  <span></span><span></span><span></span>
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
-          <div ref={bottomRef}></div>
+            <div ref={bottomRef}></div>
+          </div>
+
+          <div className="chat-input">
+            <input
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Ask about inventory, expiry, reorder..."
+              onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+            />
+            <button onClick={sendMessage}>➤</button>
+          </div>
         </div>
 
-        {/* INPUT */}
-        <div className="chat-input">
-          <input
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Ask about inventory, expiry, reorder..."
-            onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-          />
-          <button onClick={sendMessage}>➤</button>
+        {/* RIGHT PANEL */}
+        <div className="chat-right glass">
+          <h3>Notifications</h3>
+          <p>✔ Expiry alerts checked</p>
+          <p>✔ Forecast updated</p>
+          <p>✔ NLP model active</p>
         </div>
-      </div>
-
-      {/* RIGHT PANEL */}
-      <div className="chat-right glass">
-        <h3>Notifications</h3>
-        <p>✔ Expiry alerts checked</p>
-        <p>✔ Forecast updated</p>
-        <p>✔ NLP model active</p>
       </div>
     </div>
   );
