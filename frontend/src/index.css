@@ -1,3 +1,6 @@
+/* =====================
+   GLOBAL THEME
+===================== */
 :root {
   --bg-main: #0a0a0f;
   --bg-card: rgba(255, 255, 255, 0.06);
@@ -19,57 +22,48 @@ body {
   font-family: "Inter", system-ui, -apple-system;
 }
 
-/* ---------- NAVBAR ---------- */
-.navbar {
-  height: 72px;
-  background: rgba(0, 0, 0, 0.55);
-  backdrop-filter: blur(14px);
+/* =====================
+   APP LAYOUT
+===================== */
+.app-layout {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 28px;
-  border-bottom: 1px solid var(--border-glass);
+  min-height: 100vh;
 }
 
-.navbar h2 {
-  color: var(--accent);
-  font-weight: 700;
-}
-
-.navbar a {
-  color: var(--text-muted);
-  margin-left: 18px;
-  text-decoration: none;
-}
-
-.navbar a:hover {
-  color: white;
-}
-
-/* ---------- LAYOUT ---------- */
+/* =====================
+   MAIN CONTAINER
+===================== */
 .container {
+  flex: 1;
   padding: 28px;
 }
 
-/* ---------- GRID ---------- */
+/* =====================
+   GRID (STAT CARDS)
+===================== */
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
   gap: 22px;
 }
 
-/* ---------- CARDS ---------- */
+/* =====================
+   CARDS
+===================== */
 .card {
   background: linear-gradient(
-    180deg,
-    rgba(139, 92, 246, 0.15),
-    rgba(0, 0, 0, 0.45)
+    160deg,
+    rgba(139, 92, 246, 0.18),
+    rgba(0, 0, 0, 0.55)
   );
-  border-radius: 20px;
-  padding: 24px;
-  border: 1px solid var(--border-glass);
-  box-shadow: 0 25px 45px rgba(0, 0, 0, 0.65);
+  border-radius: 22px;
+  padding: 26px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow:
+    0 20px 40px rgba(0, 0, 0, 0.7),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.03);
 }
+
 
 .card h3 {
   font-size: 15px;
@@ -82,7 +76,37 @@ body {
   font-weight: 700;
 }
 
-/* ---------- TABLE ---------- */
+/* =====================
+   FILTERS (DROPDOWN + DATE)
+===================== */
+.filters {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 28px;
+  align-items: center;
+}
+
+select {
+  background: var(--bg-card);
+  border: 1px solid var(--border-glass);
+  padding: 12px;
+  border-radius: 14px;
+  color: white;
+}
+
+/* =====================
+   CHART LAYOUT
+===================== */
+.charts {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+  margin-top: 32px;
+}
+
+/* =====================
+   TABLE
+===================== */
 table {
   width: 100%;
   margin-top: 24px;
@@ -97,6 +121,7 @@ th {
   font-size: 13px;
   color: var(--text-muted);
   background: rgba(255, 255, 255, 0.05);
+  text-align: left;
 }
 
 td {
@@ -108,14 +133,40 @@ tr:hover {
   background: rgba(139, 92, 246, 0.1);
 }
 
-/* ---------- INPUT & BUTTON ---------- */
+/* =====================
+   EXPIRY STATUS BADGES
+===================== */
+.status {
+  padding: 6px 12px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.status.Critical {
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+}
+
+.status.Warning {
+  background: rgba(234, 179, 8, 0.2);
+  color: #eab308;
+}
+
+.status.Safe {
+  background: rgba(34, 197, 94, 0.2);
+  color: #22c55e;
+}
+
+/* =====================
+   INPUT & BUTTON
+===================== */
 input {
   background: var(--bg-card);
   border: 1px solid var(--border-glass);
   padding: 12px;
   border-radius: 14px;
   color: white;
-  width: 100%;
 }
 
 button {
@@ -131,4 +182,62 @@ button {
 
 button:hover {
   opacity: 0.9;
+}
+/* ---------- FIX SELECT DROPDOWN WHITE ---------- */
+select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-color: var(--bg-card);
+  color: white;
+}
+
+select option {
+  background-color: #0a0a0f;
+  color: white;
+}
+
+select:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.4);
+}
+/* ===== TOP NAVBAR (CLASSIC, LIKE IMAGE) ===== */
+
+.topbar {
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+
+  background: linear-gradient(
+    180deg,
+    rgba(18, 14, 36, 0.95),
+    rgba(8, 8, 15, 0.95)
+  );
+
+  border-bottom: 1px solid rgba(139, 92, 246, 0.35);
+}
+
+.brand {
+  font-size: 20px;
+  font-weight: 600;
+  color: #a78bfa;
+}
+
+.topbar-links a {
+  margin-left: 26px;
+  font-size: 14.5px;
+  color: #c7c7dd;
+  text-decoration: none;
+}
+
+.topbar-links a:hover {
+  color: #ffffff;
+}
+
+.topbar-links a.active {
+  color: #ffffff;
+  border-bottom: 2px solid #8b5cf6;
+  padding-bottom: 6px;
 }

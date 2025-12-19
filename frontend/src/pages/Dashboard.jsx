@@ -31,19 +31,21 @@ export default function Dashboard() {
   return (
     <div>
       {/* Header */}
-      <h1 style={{ fontWeight: 700, fontSize: "30px" }}>
+      <h1 style={{ fontWeight: 700, fontSize: "34px", marginBottom: "8px" }}>
         Statistics
       </h1>
-      <p style={{ color: "#b3b3c6", marginBottom: "28px" }}>
+      <p style={{ color: "#b3b3c6", fontSize: "16px", marginBottom: "32px" }}>
         Smart Pharmacy Inventory Overview
       </p>
+
 
       {/* Stat Cards */}
       <div className="grid">
         <StatCard title="Total Medicines" value={stats.total} />
         <StatCard title="Low Stock" value={stats.low_stock} />
         <StatCard title="Expiring Soon" value={stats.expiring} />
-        <StatCard title="Revenue" value={`₹${stats.revenue}`} />
+        <StatCard title="Revenue" value={stats.revenue} prefix="₹" />
+
       </div>
 
       {/* Charts Section */}

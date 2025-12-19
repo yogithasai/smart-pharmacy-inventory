@@ -1,16 +1,17 @@
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
 export default function Navbar() {
   return (
-    <nav className="navbar">
-      <h2>💊 Smart Pharmacy</h2>
-      <div>
-        <Link to="/">Dashboard</Link>
-        <Link to="/expiry">Expiry</Link>
-        <Link to="/forecast">Forecast</Link>
-        <Link to="/reorder">Reorder</Link>
-        <Link to="/chatbot">Chatbot</Link>
-      </div>
-    </nav>
+    <header className="topbar">
+      <span className="brand">💊 Smart Pharmacy</span>
+
+      <nav className="topbar-links">
+        <NavLink to="/">Dashboard</NavLink>
+        <NavLink to="/expiry">Expiry</NavLink>
+        <NavLink to="/forecast">Forecast</NavLink>
+        <NavLink to="/reorder">Reorder</NavLink>
+        <NavLink to="/chatbot">Chatbot</NavLink>
+      </nav>
+    </header>
   );
 }

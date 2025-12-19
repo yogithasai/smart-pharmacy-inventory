@@ -12,7 +12,7 @@ export default function DemandChart({ title, data }) {
     <div className="card">
       <h3 style={{ marginBottom: "14px" }}>{title}</h3>
 
-      <ResponsiveContainer width="100%" height={260}>
+    <ResponsiveContainer width="100%" height={300}>
         <LineChart data={data}>
           <XAxis dataKey="date" stroke="#b3b3c6" />
           <YAxis stroke="#b3b3c6" />
