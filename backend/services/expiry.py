@@ -22,7 +22,7 @@ def get_expiry_alerts():
     df["Drug_Name"] = df["Drug_Name"].str.lower().str.replace("-", " ")
 
     # Filter medicines expiring in next 30 days
-    alerts = df[df["Days_To_Expiry"] <= 30]
+    alerts = df[df["Days_To_Expiry"] <= 30].copy()
 
     # Calculate potential loss
     alerts["Potential_Loss"] = alerts["Qty_Received"] * alerts["Unit_Cost_Price"]
