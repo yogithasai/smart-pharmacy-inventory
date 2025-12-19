@@ -1,8 +1,11 @@
-export default function StatCard({ title, value }) {
+export default function StatCard({ title, value, prefix = "" }) {
+  const displayValue =
+    value === undefined || value === null ? "--" : `${prefix}${value}`;
+
   return (
     <div className="card">
       <h3>{title}</h3>
-      <p>{value ?? "--"}</p>
+      <p>{displayValue}</p>
     </div>
   );
 }
