@@ -1,108 +1,103 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 
-
-# ---------- CREATE APP FIRST ----------
+# ---------- CREATE APP ----------
 app = Flask(__name__)
 CORS(app)
-
 
 # ---------- IMPORT SERVICES ----------
 from services.inventory import get_inventory
 from services.expiry import get_expiry_alerts
 from services.forecast import get_forecast, get_reorder
-from services.chatbot import chatbot_response
-
+from services.chatbot import chatbot_response   # ✅ ONLY THIS
 
 # ---------- ROUTES ----------
 @app.route("/")
 def home():
     return {"status": "PharmaSense AI Backend Running"}
 
-
 @app.route("/inventory")
 def inventory():
     return jsonify(get_inventory())
-
 
 @app.route("/expiry-alerts")
 def expiry_alerts():
     return jsonify(get_expiry_alerts())
 
-
 @app.route("/forecast")
 def forecast():
     return jsonify(get_forecast())
-
 
 @app.route("/reorder")
 def reorder():
     return jsonify(get_reorder())
 
-
 @app.route("/chatbot", methods=["POST"])
 def chatbot():
     data = request.get_json()
-    question = data.get("question", "").lower()
+    question = data.get("question", "").strip()
 
     if not question:
-        return jsonify({"answer": "Please ask a valid question."})
+        return jsonify({"answer": "Please ask a valid pharmacy-related question."})
 
-    # NLP intent
-    X = vectorizer.transform([question])
-    intent = model.predict(X)[0]
+    # Call NLP chatbot service
+    result = chatbot_response(question)
 
-    # ---------------- ENTITY EXTRACTION ----------------
-    drug_list = purchases["Drug_Name"].unique().tolist()
-    detected_drug = None
+    # ALWAYS return text to frontend
+    if result["type"] == "text":
+        return jsonify({"answer": result["response"]})
 
-    for drug in drug_list:
-        if drug in question:
-            detected_drug = drug
-            break
+    if result["type"] == "table":
+        rows = result["response"]
 
-    # ---------------- INTENT LOGIC ----------------
-    if intent == "inventory":
-        if detected_drug:
-            stock = purchases[purchases["Drug_Name"] == detected_drug]["Quantity"].sum()
-            answer = f"Current stock of {detected_drug} is {int(stock)} units."
-        else:
-            total_stock = purchases["Quantity"].sum()
-            answer = f"Total inventory stock is {int(total_stock)} units."
+        if not rows:
+            return jsonify({"answer": "No relevant data found."})
 
-    elif intent == "expiry":
-        if detected_drug:
-            row = purchases[purchases["Drug_Name"] == detected_drug].sort_values("Days_To_Expire")
-            if not row.empty:
-                days = int(row.iloc[0]["Days_To_Expire"])
-                answer = f"{detected_drug} will expire in {days} days."
-            else:
-                answer = f"No expiry data found for {detected_drug}."
-        else:
-            expiring = purchases[purchases["Days_To_Expire"] <= 30]
-            answer = f"{len(expiring)} medicines are expiring within 30 days."
+        # INVENTORY
+        if "Current_Stock" in rows[0]:
+            total = sum(r["Current_Stock"] for r in rows)
+            examples = ", ".join(
+                f"{r['Drug_Name']} ({r['Current_Stock']} units)"
+                for r in rows[:5]
+            )
+            return jsonify({
+                "answer": (
+                    f"The current inventory contains {total} units in total. "
+                    f"Some available medicines include {examples}."
+                )
+            })
 
-    elif intent == "reorder":
-        low_stock = purchases[purchases["Quantity"] < 20]
-        if detected_drug:
-            stock = purchases[purchases["Drug_Name"] == detected_drug]["Quantity"].sum()
-            answer = f"{detected_drug} current stock is {stock} units."
-        else:
-            meds = low_stock["Drug_Name"].unique().tolist()
-            answer = "Medicines to reorder: " + ", ".join(meds[:8])
+        # EXPIRY
+        if "Days_To_Expire" in rows[0]:
+            soon = [r for r in rows if r["Days_To_Expire"] <= 30]
+            if not soon:
+                return jsonify({
+                    "answer": "No medicines are expiring within the next 30 days."
+                })
+            example = ", ".join(
+                f"{r['Drug_Name']} ({r['Days_To_Expire']} days)"
+                for r in soon[:5]
+            )
+            return jsonify({
+                "answer": (
+                    f"{len(soon)} medicines are expiring soon. "
+                    f"Examples include {example}."
+                )
+            })
 
-    elif intent == "loss":
-        expired = purchases[purchases["Days_To_Expire"] <= 0]
-        loss = (expired["Quantity"] * expired["Price"]).sum()
-        answer = f"Estimated loss due to expired medicines is ₹{int(loss)}."
+        # REORDER
+        if "Reorder_Quantity" in rows[0]:
+            meds = ", ".join(r["Drug_Name"] for r in rows[:5])
+            return jsonify({
+                "answer": f"The following medicines require reordering: {meds}."
+            })
 
-    else:
-        answer = "I can answer inventory-related questions only."
-
-    return jsonify({"answer": answer})
-
+    return jsonify({
+        "answer": "I can help with inventory, expiry, reorder, and loss-related queries."
+    })
 
 
-# ---------- RUN SERVER ----------
+
+# ---------- RUN ----------
 if __name__ == "__main__":
     app.run(debug=True)
