@@ -1,7 +1,11 @@
 from flask import Flask, jsonify, request
+from flask_cors import CORS
+
 
 # ---------- CREATE APP FIRST ----------
 app = Flask(__name__)
+CORS(app)
+
 
 # ---------- IMPORT SERVICES ----------
 from services.inventory import get_inventory
