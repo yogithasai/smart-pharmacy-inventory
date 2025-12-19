@@ -124,6 +124,29 @@ def chatbot():
         "answer": "I can help with inventory, expiry, reorder, and loss-related queries."
     })
 
+@app.route("/order", methods=["POST"])
+def place_order():
+    data = request.get_json()
+    drug = data.get("medicine")
+
+    if not drug:
+        return jsonify({"error": "Medicine name required"}), 400
+
+    # get inventory
+    inventory = get_inventory()
+
+    for item in inventory:
+        if item["Drug_Name"].lower() == drug.lower():
+            # simulate reorder
+            item["Current_Stock"] += 100  # assume supplier delivers 100 units
+            break
+
+    return jsonify({
+        "success": True,
+        "message": f"Order placed successfully for {drug}"
+    })
+
+
 # ---------- RUN ----------
 if __name__ == "__main__":
     app.run(debug=True)

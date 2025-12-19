@@ -22,7 +22,6 @@ export default function Expiry() {
           return;
         }
 
-        // 🔥 MAP BACKEND → FRONTEND FORMAT
         const mapped = res.data.map((item) => ({
           medicine: item.Drug_Name,
           expiry_days: item.Days_To_Expiry,
@@ -78,15 +77,12 @@ export default function Expiry() {
     .filter((d) => d.expiry_days <= 30)
     .reduce((s, d) => s + d.stock_value, 0);
 
-  /* ================= RENDER ================= */
   return (
-    <div className="px-14 py-20 space-y-36">
+    <div className="px-14 py-20 space-y-24">
 
-      {/* ================= HERO ================= */}
-      <section className="rounded-3xl px-16 py-20 bg-gradient-to-br from-red-600/20 to-orange-500/10">
+      {/* HERO */}
+      <section className="section-card">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-
-          {/* LEFT */}
           <div className="space-y-6">
             <h1 className="text-5xl font-bold">
               Expiry Risk Overview
@@ -104,8 +100,7 @@ export default function Expiry() {
             />
           </div>
 
-          {/* RIGHT STATS */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+          <div className="kpi-grid">
             <StatCard label="Expired" value={expiredCount} danger />
             <StatCard label="Expiring Soon" value={expiringSoon} />
             <StatCard
@@ -116,39 +111,50 @@ export default function Expiry() {
         </div>
       </section>
 
-      {/* ================= DISTRIBUTION ================= */}
-      <section className="grid grid-cols-1 md:grid-cols-3 gap-10">
-        <ExpiryBucket title="≤ 7 Days" color="red" data={enrichedData.filter(d => d.expiry_days <= 7)} />
-        <ExpiryBucket title="8–30 Days" color="orange" data={enrichedData.filter(d => d.expiry_days > 7 && d.expiry_days <= 30)} />
-        <ExpiryBucket title="> 30 Days" color="green" data={enrichedData.filter(d => d.expiry_days > 30)} />
+      {/* BUCKETS */}
+      <section className="kpi-grid">
+        <ExpiryBucket
+          title="≤ 7 Days"
+          color="red"
+          data={enrichedData.filter(d => d.expiry_days <= 7)}
+        />
+        <ExpiryBucket
+          title="8–30 Days"
+          color="orange"
+          data={enrichedData.filter(d => d.expiry_days > 7 && d.expiry_days <= 30)}
+        />
+        <ExpiryBucket
+          title="> 30 Days"
+          color="green"
+          data={enrichedData.filter(d => d.expiry_days > 30)}
+        />
       </section>
 
-      {/* ================= VISUAL ================= */}
-      <ExpiryCharts data={enrichedData} />
+      {/* CHART */}
+      <section className="section-card">
+        <ExpiryCharts data={enrichedData} />
+      </section>
 
-      {/* ================= TABLE ================= */}
-      <section className="space-y-12">
-        <h2 className="text-2xl font-semibold">
+      {/* TABLE */}
+      <section className="section-card">
+        <h2 className="text-2xl font-semibold mb-6">
           Expiry Action Table
         </h2>
-
-        <div className="bg-white/5 rounded-3xl p-10">
-          <Table
-            columns={[
-              "medicine",
-              "expiry_days",
-              "stock",
-              "stock_value",
-              "risk",
-              "action",
-            ]}
-            data={enrichedData}
-          />
-        </div>
+        <Table
+          columns={[
+            "medicine",
+            "expiry_days",
+            "stock",
+            "stock_value",
+            "risk",
+            "action",
+          ]}
+          data={enrichedData}
+        />
       </section>
 
-      {/* ================= INSIGHT ================= */}
-      <section className="bg-gradient-to-r from-red-500/10 to-orange-500/10 rounded-2xl px-10 py-8">
+      {/* INSIGHT */}
+      <section className="section-card">
         <p className="text-base text-gray-300 max-w-3xl">
           ⚠️ Medicines expiring within 30 days should be prioritized
           for discounting, redistribution, or removal to reduce
@@ -165,9 +171,7 @@ export default function Expiry() {
 function StatCard({ label, value, danger }) {
   return (
     <div
-      className={`rounded-2xl p-6 bg-white/5 ${
-        danger ? "border border-red-500/30" : ""
-      }`}
+      className={`card ${danger ? "border border-red-500/30" : ""}`}
     >
       <p className="text-sm text-gray-400 mb-2">{label}</p>
       <h2 className="text-3xl font-semibold">{value}</h2>
@@ -183,7 +187,7 @@ function ExpiryBucket({ title, data, color }) {
   };
 
   return (
-    <div className={`rounded-3xl p-8 bg-white/5 border ${colorMap[color]}`}>
+    <div className={`bucket-card ${colorMap[color]}`}>
       <h3 className="text-xl font-semibold mb-4">{title}</h3>
       <p className="text-3xl font-bold mb-2">{data.length}</p>
       <p className="text-sm text-gray-400">
