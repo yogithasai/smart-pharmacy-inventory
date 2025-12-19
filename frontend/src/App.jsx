@@ -5,6 +5,7 @@ import Expiry from "./pages/Expiry";
 import Forecast from "./pages/Forecast";
 import Reorder from "./pages/Reorder";
 import Chatbot from "./pages/Chatbot";
+import "./index.css";
 
 export default function App() {
   return (

@@ -11,7 +11,12 @@ export default function Dashboard() {
 
   return (
     <div>
-      <h1>Inventory Overview</h1>
+      <h1 style={{ fontWeight: 700, fontSize: "28px" }}>
+          Statistics
+      </h1>
+      <p style={{ color: "#b3b3c6", marginBottom: "24px" }}>
+           Smart Pharmacy Inventory Overview
+      </p>
       <div className="grid">
         <StatCard title="Total Medicines" value={stats.total} />
         <StatCard title="Low Stock" value={stats.low_stock} />
