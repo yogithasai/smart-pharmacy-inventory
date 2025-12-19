@@ -25,7 +25,7 @@ def chatbot_response(message: str):
     msg = message.lower().strip()
 
     # =================================================
-    # SMART INTENT OVERRIDE (CRITICAL)
+    # SMART INTENT OVERRIDE
     # =================================================
     reorder_keywords = [
         "reorder", "restock", "order again", "low stock",
@@ -43,7 +43,6 @@ def chatbot_response(message: str):
     if intent == "inventory":
         inventory = get_inventory()
 
-        # Specific medicine query
         for item in inventory:
             if item["Drug_Name"].lower() in msg:
                 return {
@@ -56,9 +55,7 @@ def chatbot_response(message: str):
                     )
                 }
 
-        # Overall inventory summary
         total_stock = sum(i["Current_Stock"] for i in inventory)
-        top_items = inventory[:5]
 
         response = (
             "📦 **Inventory Overview**\n\n"
@@ -66,8 +63,11 @@ def chatbot_response(message: str):
             "• **Top Available Medicines:**\n"
         )
 
-        for item in top_items:
-            response += f"  • {item['Drug_Name']} — {item['Current_Stock']:,} units\n"
+        for item in inventory[:5]:
+            response += (
+                f"  • {item['Drug_Name']} — "
+                f"{item['Current_Stock']:,} units\n"
+            )
 
         response += "\n📊 Source: Live inventory records"
 
@@ -95,7 +95,7 @@ def chatbot_response(message: str):
         }
 
     # =================================================
-    # REORDER (FULLY FIXED)
+    # ✅ REORDER (FORECAST-BASED, REAL DATA)
     # =================================================
     if intent == "reorder":
         reorder = get_reorder()
@@ -110,24 +110,22 @@ def chatbot_response(message: str):
                 )
             }
 
-        total_reorder_items = len(reorder)
-
         response = (
-            "📦 **Reorder Summary**\n\n"
-            f"• **Medicines requiring reorder:** {total_reorder_items}\n\n"
-            "• **Low Stock Medicines:**\n"
+            "📦 **Forecast-Based Reorder Recommendations**\n\n"
+            f"• **Medicines requiring reorder:** {len(reorder)}\n\n"
         )
 
         for item in reorder:
             response += (
-                f"  • {item['Drug_Name']} — "
-                f"{item['Current_Stock']} units remaining\n"
+                f"• **{item['Drug_Name']}**\n"
+                f"  Current Stock: {item['Current_Stock']} units\n"
+                f"  Forecast (14 days): {item['Forecast_14_Days']} units\n"
+                f"  👉 Reorder Quantity: **{item['Reorder_Qty']} units**\n\n"
             )
 
         response += (
-            "\n📌 **Action Required:**\n"
-            "Please reorder the above medicines to avoid stock shortages.\n\n"
-            "📊 Source: Live stock monitoring system"
+            "📊 **Reason:** Forecasted demand exceeds current stock.\n"
+            "🧠 **Source:** Sales-driven demand forecasting model"
         )
 
         return {"type": "text", "response": response}
@@ -158,7 +156,7 @@ def chatbot_response(message: str):
             "You can ask me about:\n"
             "• Inventory status\n"
             "• Expiry alerts\n"
-            "• Reorder requirements\n"
+            "• Forecast-based reorder requirements\n"
             "• Loss due to expiry\n\n"
             "Please ask a pharmacy-related question."
         )

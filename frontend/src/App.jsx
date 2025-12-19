@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { HashRouter, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Dashboard from "./pages/Dashboard";
 import Expiry from "./pages/Expiry";
@@ -8,7 +8,7 @@ import Chatbot from "./pages/Chatbot";
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <Navbar />
       <div className="container">
         <Routes>
@@ -19,6 +19,6 @@ export default function App() {
           <Route path="/chatbot" element={<Chatbot />} />
         </Routes>
       </div>
-    </BrowserRouter>
+    </HashRouter>
   );
 }

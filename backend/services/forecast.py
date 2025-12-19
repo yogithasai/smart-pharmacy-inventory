@@ -10,13 +10,22 @@ def get_forecast(days=14):
     sales = pd.read_json(SALES)
 
     # Normalize drug names
-    sales["Drug_Name"] = sales["Drug_Name"].str.lower().str.replace("-", " ")
+    sales["Drug_Name"] = (
+        sales["Drug_Name"]
+        .str.lower()
+        .str.replace("-", " ")
+        .str.strip()
+    )
 
     # Average daily sales
     avg_sales = sales.groupby("Drug_Name")["Qty_Sold"].mean()
 
     forecast = (avg_sales * days).reset_index()
-    forecast.columns = ["Drug_Name", "Forecast_14_Days"]
+
+    # 🔥 CRITICAL: Rename columns for frontend compatibility
+    forecast.columns = ["medicine", "predicted_demand"]
+
+    forecast["predicted_demand"] = forecast["predicted_demand"].astype(int)
 
     return forecast.to_dict(orient="records")
 
@@ -27,9 +36,17 @@ def get_reorder():
     inventory = pd.DataFrame(get_inventory())
     forecast = pd.DataFrame(get_forecast())
 
-    df = inventory.merge(forecast, on="Drug_Name", how="left").fillna(0)
+    inventory["Drug_Name"] = inventory["Drug_Name"].str.lower().str.strip()
+    forecast["medicine"] = forecast["medicine"].str.lower().str.strip()
 
-    df["Reorder_Qty"] = df["Forecast_14_Days"] - df["Current_Stock"]
+    df = inventory.merge(
+        forecast,
+        left_on="Drug_Name",
+        right_on="medicine",
+        how="left"
+    ).fillna(0)
+
+    df["Reorder_Qty"] = df["predicted_demand"] - df["Current_Stock"]
     df = df[df["Reorder_Qty"] > 0]
 
     df["Reorder_Qty"] = df["Reorder_Qty"].astype(int)

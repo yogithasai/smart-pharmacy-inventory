@@ -19,12 +19,27 @@ export default function Forecast() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
 
-  /* ================= FETCH DATA ================= */
+  /* ================= FETCH DATA (REFRESH-SAFE) ================= */
   useEffect(() => {
+    const cached = sessionStorage.getItem("forecast_data");
+
+    if (cached) {
+      setData(JSON.parse(cached));
+      setLoading(false);
+      return;
+    }
+
     getForecast()
       .then((res) => {
         const apiData = Array.isArray(res.data) ? res.data : [];
-        setData(apiData.length > 0 ? apiData : SAMPLE_FORECAST_DATA);
+        const finalData =
+          apiData.length > 0 ? apiData : SAMPLE_FORECAST_DATA;
+
+        setData(finalData);
+        sessionStorage.setItem(
+          "forecast_data",
+          JSON.stringify(finalData)
+        );
       })
       .catch(() => {
         setData(SAMPLE_FORECAST_DATA);
@@ -197,9 +212,3 @@ function StatCard({ label, value, accent }) {
     </div>
   );
 }
-
-
-
-
-
-
