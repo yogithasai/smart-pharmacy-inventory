@@ -1,26 +1,43 @@
 import { useEffect, useMemo, useState } from "react";
+import { getExpiryAlerts } from "../api/api";
 import Table from "../components/Table";
 import ExpiryCharts from "../components/ExpiryCharts";
 
-
-/* ================= SAMPLE DATA ================= */
+/* ================= SAMPLE FALLBACK DATA ================= */
 const SAMPLE_EXPIRY_DATA = [
   { medicine: "Paracetamol", expiry_days: 5, stock: 120, unit_price: 2 },
   { medicine: "Amoxicillin", expiry_days: 18, stock: 80, unit_price: 4 },
-  { medicine: "Ibuprofen", expiry_days: 45, stock: 60, unit_price: 3 },
-  { medicine: "Cetirizine", expiry_days: 2, stock: 30, unit_price: 1.5 },
-  { medicine: "Insulin", expiry_days: 10, stock: 50, unit_price: 12 },
-  { medicine: "Metformin", expiry_days: 90, stock: 110, unit_price: 5 },
 ];
 
 export default function Expiry() {
   const [data, setData] = useState([]);
   const [search, setSearch] = useState("");
 
-  /* ========== LOAD DATA ========== */
+  /* ========== LOAD REAL DATA ========== */
   useEffect(() => {
-    // replace later with API
-    setData(SAMPLE_EXPIRY_DATA);
+    getExpiryAlerts()
+      .then((res) => {
+        if (!Array.isArray(res.data)) {
+          setData(SAMPLE_EXPIRY_DATA);
+          return;
+        }
+
+        // 🔥 MAP BACKEND → FRONTEND FORMAT
+        const mapped = res.data.map((item) => ({
+          medicine: item.Drug_Name,
+          expiry_days: item.Days_To_Expiry,
+          stock: item.Qty_Received,
+          unit_price:
+            item.Qty_Received > 0
+              ? item.Potential_Loss / item.Qty_Received
+              : 0,
+        }));
+
+        setData(mapped);
+      })
+      .catch(() => {
+        setData(SAMPLE_EXPIRY_DATA);
+      });
   }, []);
 
   /* ========== ENRICH DATA ========== */
@@ -93,21 +110,21 @@ export default function Expiry() {
             <StatCard label="Expiring Soon" value={expiringSoon} />
             <StatCard
               label="At-Risk Stock Value"
-              value={`₹${atRiskValue}`}
+              value={`₹${Math.round(atRiskValue)}`}
             />
           </div>
         </div>
       </section>
 
-      {/* ================= EXPIRY DISTRIBUTION ================= */}
+      {/* ================= DISTRIBUTION ================= */}
       <section className="grid grid-cols-1 md:grid-cols-3 gap-10">
         <ExpiryBucket title="≤ 7 Days" color="red" data={enrichedData.filter(d => d.expiry_days <= 7)} />
         <ExpiryBucket title="8–30 Days" color="orange" data={enrichedData.filter(d => d.expiry_days > 7 && d.expiry_days <= 30)} />
         <ExpiryBucket title="> 30 Days" color="green" data={enrichedData.filter(d => d.expiry_days > 30)} />
       </section>
-      {/* ================= VISUAL ANALYTICS ================= */}
-      <ExpiryCharts data={enrichedData} />
 
+      {/* ================= VISUAL ================= */}
+      <ExpiryCharts data={enrichedData} />
 
       {/* ================= TABLE ================= */}
       <section className="space-y-12">

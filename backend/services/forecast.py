@@ -46,9 +46,15 @@ def get_reorder():
         how="left"
     ).fillna(0)
 
+    # 🔥 RELAX CONDITION FOR UI VISIBILITY
     df["Reorder_Qty"] = df["predicted_demand"] - df["Current_Stock"]
-    df = df[df["Reorder_Qty"] > 0]
+
+    # ⚠️ instead of filtering everything out
+    df.loc[df["Reorder_Qty"] < 0, "Reorder_Qty"] = 0
 
     df["Reorder_Qty"] = df["Reorder_Qty"].astype(int)
 
-    return df[["Drug_Name", "Reorder_Qty"]].to_dict(orient="records")
+    return df[["Drug_Name", "Current_Stock", "Reorder_Qty"]].to_dict(
+        orient="records"
+    )
+
