@@ -48,9 +48,9 @@ def chatbot_response(message: str):
                 return {
                     "type": "text",
                     "response": (
-                        f"📦 **Inventory Status**\n\n"
-                        f"• Medicine: **{item['Drug_Name']}**\n"
-                        f"• Available Stock: **{item['Current_Stock']:,} units**\n\n"
+                        f"📦 Inventory Status\n\n"
+                        f"• Medicine: {item['Drug_Name']}\n"
+                        f"• Available Stock: {item['Current_Stock']:,} units\n\n"
                         "📊 Source: Live inventory records"
                     )
                 }
@@ -58,9 +58,9 @@ def chatbot_response(message: str):
         total_stock = sum(i["Current_Stock"] for i in inventory)
 
         response = (
-            "📦 **Inventory Overview**\n\n"
-            f"• **Total Stock:** {total_stock:,} units\n\n"
-            "• **Top Available Medicines:**\n"
+            "📦 Inventory Overview\n\n"
+            f"• Total Stock: {total_stock:,} units\n\n"
+            "• Top Available Medicines:\n"
         )
 
         for item in inventory[:5]:
@@ -88,8 +88,8 @@ def chatbot_response(message: str):
         return {
             "type": "text",
             "response": (
-                "⏳ **Expiry Alert Summary**\n\n"
-                f"• **{len(expiry)} medicines** are approaching expiry.\n\n"
+                "⏳ Expiry Alert Summaryn\n"
+                f"• {len(expiry)} medicines are approaching expiry.\n\n"
                 "📋 Please check the expiry dashboard for detailed dates."
             )
         }
@@ -104,28 +104,28 @@ def chatbot_response(message: str):
             return {
                 "type": "text",
                 "response": (
-                    "✅ **Reorder Status**\n\n"
+                    "✅ Reorder Status\n\n"
                     "All medicines are sufficiently stocked.\n"
                     "No reorders are required at this time."
                 )
             }
 
         response = (
-            "📦 **Forecast-Based Reorder Recommendations**\n\n"
-            f"• **Medicines requiring reorder:** {len(reorder)}\n\n"
+            "📦 Forecast-Based Reorder Recommendations\n\n"
+            f"• Medicines requiring reorder: {len(reorder)}\n\n"
         )
 
         for item in reorder:
             response += (
-                f"• **{item['Drug_Name']}**\n"
+                f"• {item['Drug_Name']}\n"
                 f"  Current Stock: {item['Current_Stock']} units\n"
                 f"  Forecast (14 days): {item['Forecast_14_Days']} units\n"
-                f"  👉 Reorder Quantity: **{item['Reorder_Qty']} units**\n\n"
+                f"  👉 Reorder Quantity: {item['Reorder_Qty']} units\n\n"
             )
 
         response += (
-            "📊 **Reason:** Forecasted demand exceeds current stock.\n"
-            "🧠 **Source:** Sales-driven demand forecasting model"
+            "📊 Reason: Forecasted demand exceeds current stock.\n"
+            "🧠 Source: Sales-driven demand forecasting model"
         )
 
         return {"type": "text", "response": response}
@@ -140,8 +140,8 @@ def chatbot_response(message: str):
         return {
             "type": "text",
             "response": (
-                "💰 **Expiry Loss Analysis**\n\n"
-                f"• Estimated Financial Loss: **₹{int(total_loss):,}**\n\n"
+                "💰 Expiry Loss Analysis\n\n"
+                f"• Estimated Financial Loss: ₹{int(total_loss):,}\n\n"
                 "📉 Recommendation: Improve stock rotation and demand forecasting."
             )
         }
@@ -152,7 +152,7 @@ def chatbot_response(message: str):
     return {
         "type": "text",
         "response": (
-            "🤖 **Inventory Assistant Help**\n\n"
+            "🤖 Inventory Assistant Help\n\n"
             "You can ask me about:\n"
             "• Inventory status\n"
             "• Expiry alerts\n"
