@@ -241,3 +241,25 @@ select:focus {
   border-bottom: 2px solid #8b5cf6;
   padding-bottom: 6px;
 }
+
+/* Smooth hover feel */
+.card {
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.75);
+}
+
+td button {
+  background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+  border: none;
+  color: white;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+td button:hover {
+  opacity: 0.9;
+}
