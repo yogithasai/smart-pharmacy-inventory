@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { getReorderSuggestions } from "../api/api";
 import ReorderInsights from "../components/ReorderInsights";
 import { toast } from "react-toastify";
+import jsPDF from "jspdf";
 
 export default function Reorder() {
   const [rawData, setRawData] = useState([]);
@@ -34,7 +35,7 @@ export default function Reorder() {
         reorder_level: item.Current_Stock + reorderQty,
         suggested_order: reorderQty,
         priority,
-        unit_price: 12, // demo price
+        unit_price: 12,
       };
     });
   }, [rawData]);
@@ -92,10 +93,9 @@ export default function Reorder() {
       ];
     });
 
-    toast.info(
-      `🛒 ${item.medicine} added to reorder cart`,
-      { autoClose: 3000 }
-    );
+    toast.info(`🛒 ${item.medicine} added to reorder cart`, {
+      autoClose: 3000,
+    });
   };
 
   /* ================= METRICS ================= */
@@ -108,12 +108,49 @@ export default function Reorder() {
     0
   );
 
+  /* ================= 🧾 GENERATE RECEIPT ================= */
+  const generateReceiptPDF = () => {
+    const doc = new jsPDF();
+
+    doc.setFontSize(18);
+    doc.text("Smart Pharmacy – Order Receipt", 14, 20);
+
+    doc.setFontSize(12);
+    doc.text(`Date: ${new Date().toLocaleString()}`, 14, 30);
+
+    let y = 45;
+
+    doc.setFontSize(11);
+    doc.text("Medicine", 14, y);
+    doc.text("Qty", 110, y);
+    doc.text("Price", 150, y);
+
+    y += 8;
+
+    cart.forEach((item) => {
+      doc.text(item.medicine, 14, y);
+      doc.text(String(item.qty), 110, y);
+      doc.text(`₹${item.qty * item.price}`, 150, y);
+      y += 8;
+    });
+
+    y += 10;
+    const total = cart.reduce((s, c) => s + c.qty * c.price, 0);
+
+    doc.setFontSize(13);
+    doc.text(`Total Amount: ₹${total}`, 14, y);
+
+    doc.save("reorder-receipt.pdf");
+  };
+
   /* ================= PLACE ORDER ================= */
   const placeOrder = () => {
     toast.success(
       `✅ Order placed successfully for ${cart.length} medicines`,
       { autoClose: 5000 }
     );
+
+    generateReceiptPDF();   // 🧾 PDF generation
     setCart([]);
   };
 
