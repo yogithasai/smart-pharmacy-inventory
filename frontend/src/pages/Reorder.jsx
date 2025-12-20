@@ -1,10 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { getReorderSuggestions } from "../api/api";
-
+import ReorderInsights from "../components/ReorderInsights";
 
 export default function Reorder() {
   const [rawData, setRawData] = useState([]);
+  const [cart, setCart] = useState([]);
 
+  /* ================= FETCH DATA ================= */
   useEffect(() => {
     getReorderSuggestions()
       .then((res) => {
@@ -13,6 +15,7 @@ export default function Reorder() {
       .catch(() => setRawData([]));
   }, []);
 
+  /* ================= PREPARE TABLE DATA ================= */
   const data = useMemo(() => {
     return rawData.map((item) => {
       const reorderQty = Number(item.Reorder_Qty || 0);
@@ -27,20 +30,49 @@ export default function Reorder() {
         reorder_level: item.Current_Stock + reorderQty,
         suggested_order: reorderQty,
         priority,
-        cost: reorderQty * 12,
+        unit_price: 12, // demo price
       };
     });
   }, [rawData]);
 
+  /* ================= ADD TO CART ================= */
+  const addToCart = (item) => {
+    const qty = item.suggested_order > 0 ? item.suggested_order : 10;
+
+    setCart((prev) => {
+      const exists = prev.find((p) => p.medicine === item.medicine);
+
+      if (exists) {
+        return prev.map((p) =>
+          p.medicine === item.medicine
+            ? { ...p, qty: p.qty + qty }
+            : p
+        );
+      }
+
+      return [
+        ...prev,
+        {
+          medicine: item.medicine,
+          qty,
+          price: item.unit_price,
+          priority: item.priority,
+        },
+      ];
+    });
+  };
+
+  /* ================= METRICS ================= */
   const criticalCount = data.filter(
     (d) => d.priority === "Critical"
   ).length;
 
-  const totalCost = data.reduce(
-    (sum, d) => sum + d.cost,
+  const estimatedCost = data.reduce(
+    (sum, d) => sum + d.suggested_order * d.unit_price,
     0
   );
 
+  /* ================= UI ================= */
   return (
     <div>
       <h1 style={{ fontSize: "34px", fontWeight: 700 }}>
@@ -50,6 +82,7 @@ export default function Reorder() {
         AI-recommended reorder actions to prevent stockouts
       </p>
 
+      {/* KPI CARDS */}
       <div className="grid">
         <div className="card">
           <h3>Items to Reorder</h3>
@@ -63,10 +96,11 @@ export default function Reorder() {
 
         <div className="card">
           <h3>Estimated Cost</h3>
-          <p>₹{totalCost}</p>
+          <p>₹{estimatedCost}</p>
         </div>
       </div>
 
+      {/* TABLE */}
       <div style={{ marginTop: "40px" }}>
         <table>
           <thead>
@@ -89,13 +123,58 @@ export default function Reorder() {
                 <td>{item.suggested_order}</td>
                 <td>{item.priority}</td>
                 <td>
-                  <button>Order Now</button>
+                  <button
+                    className="cart-btn"
+                    onClick={() => addToCart(item)}
+                  >
+                    + Add
+                  </button>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+
+      {/* CART + INSIGHTS (OUTSIDE TABLE) */}
+      {cart.length > 0 && (
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gap: "24px",
+            marginTop: "40px",
+          }}
+        >
+          {/* CART */}
+          <div className="cart-summary">
+            <h3>🛒 Reorder Cart</h3>
+
+            {cart.map((c, i) => (
+              <div key={i} className="cart-row">
+                <span>{c.medicine}</span>
+                <span>Qty: {c.qty}</span>
+              </div>
+            ))}
+
+            <div className="cart-total">
+              <strong>Total Items:</strong> {cart.length}
+            </div>
+
+            <div className="cart-total">
+              <strong>Total Cost:</strong>{" "}
+              ₹{cart.reduce((s, c) => s + c.qty * c.price, 0)}
+            </div>
+
+            <button className="checkout-btn">
+              Proceed to Order
+            </button>
+          </div>
+
+          {/* VISUAL INSIGHTS */}
+          <ReorderInsights cart={cart} />
+        </div>
+      )}
     </div>
   );
 }
