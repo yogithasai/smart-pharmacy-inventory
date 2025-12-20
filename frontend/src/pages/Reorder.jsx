@@ -1,10 +1,14 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { getReorderSuggestions } from "../api/api";
 import ReorderInsights from "../components/ReorderInsights";
+import { toast } from "react-toastify";
 
 export default function Reorder() {
   const [rawData, setRawData] = useState([]);
   const [cart, setCart] = useState([]);
+
+  // 🔔 prevent multiple alerts
+  const alertShownRef = useRef(false);
 
   /* ================= FETCH DATA ================= */
   useEffect(() => {
@@ -35,6 +39,33 @@ export default function Reorder() {
     });
   }, [rawData]);
 
+  /* ================= 🔔 PAGE LOAD ALERT ================= */
+  useEffect(() => {
+    if (alertShownRef.current || data.length === 0) return;
+
+    const critical = data.filter(d => d.priority === "Critical");
+    const medium = data.filter(d => d.priority === "Medium");
+
+    if (critical.length > 0) {
+      toast.error(
+        `🚨 ${critical.length} medicines are critically low. Reorder immediately.`,
+        { autoClose: 6000 }
+      );
+    } else if (medium.length > 0) {
+      toast.warn(
+        "⚠️ Some medicines need reordering soon.",
+        { autoClose: 5000 }
+      );
+    } else {
+      toast.success(
+        "✅ Stock levels are healthy.",
+        { autoClose: 4000 }
+      );
+    }
+
+    alertShownRef.current = true;
+  }, [data]);
+
   /* ================= ADD TO CART ================= */
   const addToCart = (item) => {
     const qty = item.suggested_order > 0 ? item.suggested_order : 10;
@@ -60,6 +91,11 @@ export default function Reorder() {
         },
       ];
     });
+
+    toast.info(
+      `🛒 ${item.medicine} added to reorder cart`,
+      { autoClose: 3000 }
+    );
   };
 
   /* ================= METRICS ================= */
@@ -71,6 +107,15 @@ export default function Reorder() {
     (sum, d) => sum + d.suggested_order * d.unit_price,
     0
   );
+
+  /* ================= PLACE ORDER ================= */
+  const placeOrder = () => {
+    toast.success(
+      `✅ Order placed successfully for ${cart.length} medicines`,
+      { autoClose: 5000 }
+    );
+    setCart([]);
+  };
 
   /* ================= UI ================= */
   return (
@@ -136,7 +181,7 @@ export default function Reorder() {
         </table>
       </div>
 
-      {/* CART + INSIGHTS (OUTSIDE TABLE) */}
+      {/* CART + INSIGHTS */}
       {cart.length > 0 && (
         <div
           style={{
@@ -146,7 +191,6 @@ export default function Reorder() {
             marginTop: "40px",
           }}
         >
-          {/* CART */}
           <div className="cart-summary">
             <h3>🛒 Reorder Cart</h3>
 
@@ -166,12 +210,14 @@ export default function Reorder() {
               ₹{cart.reduce((s, c) => s + c.qty * c.price, 0)}
             </div>
 
-            <button className="checkout-btn">
+            <button
+              className="checkout-btn"
+              onClick={placeOrder}
+            >
               Proceed to Order
             </button>
           </div>
 
-          {/* VISUAL INSIGHTS */}
           <ReorderInsights cart={cart} />
         </div>
       )}
