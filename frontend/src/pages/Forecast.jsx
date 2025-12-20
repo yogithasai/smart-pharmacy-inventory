@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { getForecast } from "../api/api";
+import { toast } from "react-toastify";
 import Table from "../components/Table";
 import ForecastCharts from "../components/ForecastCharts";
 import ForecastExplanation from "../components/ForecastExplanation";
@@ -8,6 +9,7 @@ export default function Forecast() {
   const [forecastData, setForecastData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [alertShown, setAlertShown] = useState(false);
 
   useEffect(() => {
     // avoid clash with expiry cache
@@ -61,11 +63,8 @@ export default function Forecast() {
           available_stock: available,
           gap,
           risk,
-
-          // ✅ REQUIRED FOR CHARTS (THIS FIXES BLANK UI)
           confidence: Math.min(90, 60 + gap),
           buyers: Math.max(1, Math.floor(predicted / 5)),
-
           action:
             risk === "High"
               ? "Reorder"
@@ -75,6 +74,37 @@ export default function Forecast() {
         };
       });
   }, [forecastData, search]);
+
+  /* ================= NOTIFICATIONS ================= */
+  useEffect(() => {
+    if (alertShown || enrichedData.length === 0) return;
+
+    const highRisk = enrichedData.filter(d => d.risk === "High");
+    const mediumRisk = enrichedData.filter(d => d.risk === "Medium");
+
+    if (highRisk.length > 0) {
+      toast.error(
+        `🚨 High demand predicted for ${highRisk.length} medicines. Reorder urgently.`,
+        { autoClose: 6000 }
+      );
+    }
+
+    if (mediumRisk.length > 0) {
+      toast.warn(
+        `⚠️ Moderate demand increase expected for ${mediumRisk.length} medicines.`,
+        { autoClose: 5000 }
+      );
+    }
+
+    if (highRisk.length === 0 && mediumRisk.length === 0) {
+      toast.success(
+        "✅ Demand forecast is stable. No immediate action required.",
+        { autoClose: 4000 }
+      );
+    }
+
+    setAlertShown(true);
+  }, [enrichedData, alertShown]);
 
   /* ================= METRICS ================= */
   const totalDemand = enrichedData.reduce(

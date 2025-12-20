@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { getExpiryAlerts } from "../api/api";
+import { toast } from "react-toastify";
 import Table from "../components/Table";
 import ExpiryCharts from "../components/ExpiryCharts";
 
@@ -12,6 +13,9 @@ const SAMPLE_EXPIRY_DATA = [
 export default function Expiry() {
   const [data, setData] = useState([]);
   const [search, setSearch] = useState("");
+
+  // 🔔 Prevent multiple alerts
+  const alertShownRef = useRef(false);
 
   /* ========== LOAD REAL DATA ========== */
   useEffect(() => {
@@ -69,13 +73,45 @@ export default function Expiry() {
     (d) => d.expiry_days <= 0
   ).length;
 
-  const expiringSoon = enrichedData.filter(
-    (d) => d.expiry_days <= 30
+  const highRiskCount = enrichedData.filter(
+    (d) => d.expiry_days <= 7
+  ).length;
+
+  const mediumRiskCount = enrichedData.filter(
+    (d) => d.expiry_days > 7 && d.expiry_days <= 30
   ).length;
 
   const atRiskValue = enrichedData
     .filter((d) => d.expiry_days <= 30)
     .reduce((s, d) => s + d.stock_value, 0);
+
+  /* ================= 🔔 TOAST NOTIFICATIONS ================= */
+  useEffect(() => {
+    if (alertShownRef.current || enrichedData.length === 0) return;
+
+    if (highRiskCount > 0) {
+      toast.error(
+        `🚨 ${highRiskCount} medicine(s) expiring within 7 days. Immediate action required.`,
+        { autoClose: 6000 }
+      );
+    }
+
+    if (mediumRiskCount > 0) {
+      toast.warn(
+        `⚠️ ${mediumRiskCount} medicine(s) expiring within 30 days.`,
+        { autoClose: 5000 }
+      );
+    }
+
+    if (highRiskCount === 0 && mediumRiskCount === 0) {
+      toast.success(
+        "✅ No critical expiry risks detected.",
+        { autoClose: 4000 }
+      );
+    }
+
+    alertShownRef.current = true;
+  }, [enrichedData, highRiskCount, mediumRiskCount]);
 
   return (
     <div className="px-14 py-20 space-y-24">
@@ -105,7 +141,7 @@ export default function Expiry() {
           {/* RIGHT KPI – HORIZONTAL */}
           <div className="kpi-row">
             <StatCard label="Expired" value={expiredCount} danger />
-            <StatCard label="Expiring Soon" value={expiringSoon} />
+            <StatCard label="Expiring Soon" value={highRiskCount} />
             <StatCard
               label="At-Risk Stock Value"
               value={`₹${Math.round(atRiskValue)}`}
@@ -206,8 +242,6 @@ function ExpiryBucket({ title, data, color }) {
     </div>
   );
 }
-
-/* ================= EXPIRY TIMELINE ================= */
 
 function ExpiryTimeline({ data }) {
   const maxDays = 30;

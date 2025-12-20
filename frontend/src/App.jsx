@@ -1,4 +1,7 @@
 import { HashRouter, Routes, Route } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 import Navbar from "./components/Navbar";
 import Dashboard from "./pages/Dashboard";
 import Expiry from "./pages/Expiry";
@@ -9,7 +12,19 @@ import Chatbot from "./pages/Chatbot";
 export default function App() {
   return (
     <HashRouter>
+      {/* 🔔 GLOBAL TOAST NOTIFICATIONS */}
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        pauseOnHover
+        theme="dark"
+      />
+
       <Navbar />
+
       <div className="container">
         <Routes>
           <Route path="/" element={<Dashboard />} />
