@@ -80,14 +80,16 @@ export default function Expiry() {
   return (
     <div className="px-14 py-20 space-y-24">
 
-      {/* HERO */}
+      {/* ================= HERO + KPI ================= */}
       <section className="section-card">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-          <div className="space-y-6">
+        <div className="flex flex-col lg:flex-row justify-between gap-16">
+
+          {/* LEFT */}
+          <div className="space-y-6 max-w-xl">
             <h1 className="text-5xl font-bold">
               Expiry Risk Overview
             </h1>
-            <p className="text-lg text-gray-300 max-w-lg">
+            <p className="text-lg text-gray-300">
               Monitor medicine expiry, minimize wastage, and take
               timely corrective actions.
             </p>
@@ -100,7 +102,8 @@ export default function Expiry() {
             />
           </div>
 
-          <div className="kpi-grid">
+          {/* RIGHT KPI – HORIZONTAL */}
+          <div className="kpi-row">
             <StatCard label="Expired" value={expiredCount} danger />
             <StatCard label="Expiring Soon" value={expiringSoon} />
             <StatCard
@@ -108,10 +111,11 @@ export default function Expiry() {
               value={`₹${Math.round(atRiskValue)}`}
             />
           </div>
+
         </div>
       </section>
 
-      {/* BUCKETS */}
+      {/* ================= EXPIRY BUCKETS ================= */}
       <section className="kpi-grid">
         <ExpiryBucket
           title="≤ 7 Days"
@@ -121,7 +125,9 @@ export default function Expiry() {
         <ExpiryBucket
           title="8–30 Days"
           color="orange"
-          data={enrichedData.filter(d => d.expiry_days > 7 && d.expiry_days <= 30)}
+          data={enrichedData.filter(
+            d => d.expiry_days > 7 && d.expiry_days <= 30
+          )}
         />
         <ExpiryBucket
           title="> 30 Days"
@@ -130,16 +136,22 @@ export default function Expiry() {
         />
       </section>
 
-      {/* CHART */}
+      {/* ================= TIMELINE ================= */}
+      <section className="section-card">
+        <ExpiryTimeline data={enrichedData} />
+      </section>
+
+      {/* ================= CHART ================= */}
       <section className="section-card">
         <ExpiryCharts data={enrichedData} />
       </section>
 
-      {/* TABLE */}
+      {/* ================= TABLE ================= */}
       <section className="section-card">
         <h2 className="text-2xl font-semibold mb-6">
           Expiry Action Table
         </h2>
+
         <Table
           columns={[
             "medicine",
@@ -153,7 +165,7 @@ export default function Expiry() {
         />
       </section>
 
-      {/* INSIGHT */}
+      {/* ================= INSIGHT ================= */}
       <section className="section-card">
         <p className="text-base text-gray-300 max-w-3xl">
           ⚠️ Medicines expiring within 30 days should be prioritized
@@ -170,9 +182,7 @@ export default function Expiry() {
 
 function StatCard({ label, value, danger }) {
   return (
-    <div
-      className={`card ${danger ? "border border-red-500/30" : ""}`}
-    >
+    <div className={`card ${danger ? "border border-red-500/30" : ""}`}>
       <p className="text-sm text-gray-400 mb-2">{label}</p>
       <h2 className="text-3xl font-semibold">{value}</h2>
     </div>
@@ -193,6 +203,60 @@ function ExpiryBucket({ title, data, color }) {
       <p className="text-sm text-gray-400">
         medicines in this category
       </p>
+    </div>
+  );
+}
+
+/* ================= EXPIRY TIMELINE ================= */
+
+function ExpiryTimeline({ data }) {
+  const maxDays = 30;
+
+  return (
+    <div className="timeline-card">
+      <h3 className="text-xl font-semibold mb-6">
+        Expiry Risk Timeline
+      </h3>
+
+      {data.slice(0, 5).map((item, index) => {
+        const percent = Math.min(
+          (item.expiry_days / maxDays) * 100,
+          100
+        );
+
+        const riskClass =
+          item.expiry_days <= 7
+            ? "timeline-high"
+            : item.expiry_days <= 30
+            ? "timeline-medium"
+            : "timeline-safe";
+
+        const label =
+          item.expiry_days <= 7
+            ? "High Risk"
+            : item.expiry_days <= 30
+            ? "Medium Risk"
+            : "Safe";
+
+        return (
+          <div key={index} className="timeline-row">
+            <div className="timeline-label">
+              {item.medicine}
+            </div>
+
+            <div className="timeline-bar">
+              <div
+                className={`timeline-fill ${riskClass}`}
+                style={{ width: `${percent}%` }}
+              />
+            </div>
+
+            <div className="timeline-text">
+              {item.expiry_days} days · {label}
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 }
