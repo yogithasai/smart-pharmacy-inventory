@@ -3,7 +3,7 @@ import { NavLink } from "react-router-dom";
 export default function Navbar() {
   return (
     <header className="topbar">
-      <span className="brand">💊 Smart Pharmacy</span>
+      <span className="brand">💊 MedoVentory</span>
 
       <nav className="topbar-links">
         <NavLink to="/">Dashboard</NavLink>
